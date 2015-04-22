@@ -45,9 +45,10 @@ public class H2PulsesRepository implements IPulsesRepository {
 	private long deleteTimeMillisAverage = COMMON_NUMBER_0;
 	private long getTimeMillisAverage = COMMON_NUMBER_0;
 	private long sortedKeysTimeMillisAverage = COMMON_NUMBER_0;
+	private int limitNumberPulsesToReadFromDb = COMMON_NUMBER_0;
 	private Map<String,String> bpulseRQInProgressMap;
 	
-	public H2PulsesRepository() {
+	public H2PulsesRepository(int maxNumberPulsesToProcessByTimer) {
 		
 		String dbPath = PropertiesManager.getProperty("bpulse.client.pulsesRepositoryDBPath");
 		if (dbPath == null) {
@@ -65,10 +66,12 @@ public class H2PulsesRepository implements IPulsesRepository {
 		
 		connectionPool.setMaxConnections(pPoolSizeSendPulses);
 		
+		this.limitNumberPulsesToReadFromDb = maxNumberPulsesToProcessByTimer;
+		
 		try {
 			Connection conn = connectionPool.getConnection();
 			PreparedStatement createPreparedStatement = null;
-			String CreateQuery = "CREATE TABLE BPULSE_PULSESRQ(pulserq_id varchar(100) primary key, pulserq_object BLOB, pulserq_status varchar(2))";
+			String CreateQuery = "CREATE TABLE BPULSE_PULSESRQ(pulserq_id BIGINT primary key, pulserq_object BLOB, pulserq_status varchar(2))";
 			createPreparedStatement = conn.prepareStatement(CreateQuery);
             createPreparedStatement.executeUpdate();
             createPreparedStatement.close();
@@ -77,6 +80,9 @@ public class H2PulsesRepository implements IPulsesRepository {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		convertAllBpulseKeyInProgressToPending();
+
 		bpulseRQInProgressMap = new HashMap<String,String>();
 		
 	}
@@ -88,12 +94,12 @@ public class H2PulsesRepository implements IPulsesRepository {
 		long initTime = Calendar.getInstance().getTimeInMillis();
 		Random random = new Random();
 		long additionalPulseId = Math.abs(random.nextLong());
-		String key = "BPULSE-"+System.currentTimeMillis()+"-"+additionalPulseId;
+		long key = System.currentTimeMillis()+additionalPulseId;
 		try {
 			conn = connectionPool.getConnection();
 			PreparedStatement insertPreparedStatement = null;
 			insertPreparedStatement = conn.prepareStatement(InsertQuery);
-	        insertPreparedStatement.setString(COMMON_NUMBER_1, key);
+	        insertPreparedStatement.setLong(COMMON_NUMBER_1, key);
 	        Blob blob = new SerialBlob(pPulsesRQ.toByteArray());
 	        insertPreparedStatement.setBlob(COMMON_NUMBER_2, blob);
 	        insertPreparedStatement.setString(COMMON_NUMBER_3, BPULSE_STATUS_PENDING);
@@ -103,7 +109,6 @@ public class H2PulsesRepository implements IPulsesRepository {
 	        conn.close();
 	        insertedRecords++;
 			this.insertTimeMillisAverage = this.insertTimeMillisAverage + (Calendar.getInstance().getTimeInMillis() - initTime);
-			//System.out.println("INSERTED RECORDS: " + insertedRecords + " " + Calendar.getInstance().getTime() + " INSERT AVERAGE MILLIS: " + insertTimeMillisAverage);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -117,11 +122,12 @@ public class H2PulsesRepository implements IPulsesRepository {
 		List<Object> resp = new ArrayList<Object>();
 		try {
 			conn = connectionPool.getConnection();
-			String SelectQuery = "select * from BPULSE_PULSESRQ where pulserq_status = 'P' order by pulserq_id";
+			String SelectQuery = "select * from BPULSE_PULSESRQ where pulserq_status = 'P' order by pulserq_id LIMIT ?";
 			PreparedStatement selectPreparedStatement = conn.prepareStatement(SelectQuery);
+			selectPreparedStatement.setInt(COMMON_NUMBER_1, this.limitNumberPulsesToReadFromDb);
 	        ResultSet rs = selectPreparedStatement.executeQuery();
 	        while (rs.next()) {
-	            resp.add(rs.getString(COMMON_NUMBER_1));
+	        	resp.add(rs.getLong(COMMON_NUMBER_1));
 	        }
 	        selectPreparedStatement.close();
 	        conn.close();
@@ -141,7 +147,7 @@ public class H2PulsesRepository implements IPulsesRepository {
 	}
 
 	@Override
-	public synchronized PulsesRQ getBpulseRQByKey(String pKey) {
+	public synchronized PulsesRQ getBpulseRQByKey(Long pKey) {
 		Connection conn;
 		PulsesRQ resp = null;
 		long initTime = Calendar.getInstance().getTimeInMillis();
@@ -149,7 +155,7 @@ public class H2PulsesRepository implements IPulsesRepository {
 			conn = connectionPool.getConnection();
 			String SelectQuery = "select * from BPULSE_PULSESRQ where pulserq_id=?";
 			PreparedStatement selectPreparedStatement = conn.prepareStatement(SelectQuery);
-			selectPreparedStatement.setString(COMMON_NUMBER_1, pKey);
+			selectPreparedStatement.setLong(COMMON_NUMBER_1, pKey);
 	        ResultSet rs = selectPreparedStatement.executeQuery();
 	        while (rs.next()) {
 	        	Blob obj = rs.getBlob(COMMON_NUMBER_2);
@@ -173,7 +179,7 @@ public class H2PulsesRepository implements IPulsesRepository {
 	}
 
 	@Override
-	public synchronized void deleteBpulseRQByKey(String pKey) {
+	public synchronized void deleteBpulseRQByKey(Long pKey) {
 		String deleteQuery = "DELETE FROM BPULSE_PULSESRQ" + " WHERE pulserq_id=?";
 		Connection conn;
 		long initTime = Calendar.getInstance().getTimeInMillis();
@@ -181,11 +187,12 @@ public class H2PulsesRepository implements IPulsesRepository {
 			conn = connectionPool.getConnection();
 			PreparedStatement deletePreparedStatement = null;
 			deletePreparedStatement = conn.prepareStatement(deleteQuery);
-			deletePreparedStatement.setString(COMMON_NUMBER_1, pKey);
+			deletePreparedStatement.setLong(COMMON_NUMBER_1, pKey);
 			deletePreparedStatement.executeUpdate();
 			deletePreparedStatement.close();
 	        conn.commit();
 	        conn.close();
+	        //bpulseRQInProgressMap.remove(pKey);
 	        this.deleteTimeMillisAverage = this.deleteTimeMillisAverage + (Calendar.getInstance().getTimeInMillis() - initTime);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -209,7 +216,6 @@ public class H2PulsesRepository implements IPulsesRepository {
 	        selectPreparedStatement.close();
 	        conn.close();
 	        this.getTimeMillisAverage = this.getTimeMillisAverage + (Calendar.getInstance().getTimeInMillis() - initTime);
-			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -218,7 +224,7 @@ public class H2PulsesRepository implements IPulsesRepository {
 	}
 
 	@Override
-	public synchronized void markBpulseKeyInProgress(String pKey) {
+	public synchronized void markBpulseKeyInProgress(Long pKey) {
 		
 		String updateQuery = "UPDATE BPULSE_PULSESRQ SET pulserq_status = ? WHERE pulserq_id=?";
 		Connection conn;
@@ -227,7 +233,7 @@ public class H2PulsesRepository implements IPulsesRepository {
 			PreparedStatement updatePreparedStatement = null;
 			updatePreparedStatement = conn.prepareStatement(updateQuery);
 			updatePreparedStatement.setString(COMMON_NUMBER_1, BPULSE_STATUS_INPROGRESS);
-			updatePreparedStatement.setString(COMMON_NUMBER_2, pKey);
+			updatePreparedStatement.setLong(COMMON_NUMBER_2, pKey);
 			updatePreparedStatement.executeUpdate();
 			updatePreparedStatement.close();
 	        conn.commit();
@@ -235,6 +241,7 @@ public class H2PulsesRepository implements IPulsesRepository {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		//bpulseRQInProgressMap.put(pKey, BPULSE_STATUS_INPROGRESS);
 
 	}
 
@@ -267,7 +274,7 @@ public class H2PulsesRepository implements IPulsesRepository {
 	}
 
 	@Override
-	public synchronized void releaseBpulseKeyInProgressByKey(String pKey) {
+	public synchronized void releaseBpulseKeyInProgressByKey(Long pKey) {
 		
 		String updateQuery = "UPDATE BPULSE_PULSESRQ SET pulserq_status = ? WHERE pulserq_id=?";
 		Connection conn;
@@ -276,7 +283,26 @@ public class H2PulsesRepository implements IPulsesRepository {
 			PreparedStatement updatePreparedStatement = null;
 			updatePreparedStatement = conn.prepareStatement(updateQuery);
 			updatePreparedStatement.setString(COMMON_NUMBER_1, BPULSE_STATUS_PENDING);
-			updatePreparedStatement.setString(COMMON_NUMBER_2, pKey);
+			updatePreparedStatement.setLong(COMMON_NUMBER_2, pKey);
+			updatePreparedStatement.executeUpdate();
+			updatePreparedStatement.close();
+	        conn.commit();
+	        conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	public void convertAllBpulseKeyInProgressToPending() {
+		
+		String updateQuery = "UPDATE BPULSE_PULSESRQ SET pulserq_status = ?";
+		Connection conn;
+		try {
+			conn = connectionPool.getConnection();
+			PreparedStatement updatePreparedStatement = null;
+			updatePreparedStatement = conn.prepareStatement(updateQuery);
+			updatePreparedStatement.setString(COMMON_NUMBER_1, BPULSE_STATUS_PENDING);
 			updatePreparedStatement.executeUpdate();
 			updatePreparedStatement.close();
 	        conn.commit();
@@ -322,6 +348,30 @@ public class H2PulsesRepository implements IPulsesRepository {
 	public void endTransaction() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public PulsesRQ getBpulseRQByKey(String pKey) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deleteBpulseRQByKey(String pKey) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void markBpulseKeyInProgress(String pKey) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void releaseBpulseKeyInProgressByKey(String pKey) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

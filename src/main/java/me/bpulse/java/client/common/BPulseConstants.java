@@ -13,6 +13,7 @@ public class BPulseConstants {
 	public static final int COMMON_NUMBER_3 = 3;
 	public static final int COMMON_NUMBER_5 = 5;
 	public static final int COMMON_NUMBER_180000 = 180000;
+	public static final int BPULSE_REST_HTTP_CREATED = 201;
 	
 	public static final String BPULSE_SUCCESSFUL_RESPONSE = "OK";
 	public static final String BPULSE_FAILED_RESPONSE = "ERROR";

@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.TimerTask;
 
+import org.apache.log4j.Logger;
 import org.fusesource.lmdbjni.Entry;
 import org.fusesource.lmdbjni.EntryIterator;
 
@@ -22,16 +23,16 @@ import static me.bpulse.java.client.common.BPulseConstants.DEFAULT_TIMER_MAX_NUM
 public class BPulseRestSenderTimer extends TimerTask{
 	
 	private BPulseSender bpulseSender;
-	private int maxNumberPulsesToReadFromDB;
+	final static Logger logger = Logger.getLogger(BPulseRestSenderTimer.class);
 	
-	public BPulseRestSenderTimer(BPulseSender pBpulseSender, int maxNumberRQsFromDB) {
+	public BPulseRestSenderTimer(BPulseSender pBpulseSender) {
 		this.bpulseSender = pBpulseSender;
-		this.maxNumberPulsesToReadFromDB = maxNumberRQsFromDB;
 	}
 	
 	@Override
 	public void run() {
 		Calendar c = Calendar.getInstance();
+		logger.info("EJECUCION DE TIMER BPULSE..." + c.getTime());
 		System.out.println("EJECUCION DE TIMER BPULSE..." + c.getTime());
 		executeRestPulsesSending();
 		
@@ -43,25 +44,20 @@ public class BPulseRestSenderTimer extends TimerTask{
 		IPulsesRepository pulsesRepository = bpulseSender.getPulsesRepository();
         Object[] keys = pulsesRepository.getSortedbpulseRQMapKeys();
 		//EntryIterator iterator = pulsesRepository.getIterableEntriesBpulseRQMapKeys();
-        List<String> keyPulseListToDelete = new ArrayList<String>();
+        List<Long> keyPulseListToDelete = new ArrayList<Long>();
         
         PulsesRQ summarizedPulsesRQToSend = null;
         PulsesRQ.Builder pulses = PulsesRQ.newBuilder();
-        int totalKeysRead = COMMON_NUMBER_0;
         int totalOfPulsesToSend = COMMON_NUMBER_0;
         int cantidadpulsosreal = COMMON_NUMBER_0;
         long summarizedTime = COMMON_NUMBER_0;
         long init = COMMON_NUMBER_0;
         long initGets = COMMON_NUMBER_0;
         long summarizeGets = COMMON_NUMBER_0;
-        System.out.println("INICIO PROCESAMIENTO PULSOS..." + " RECORDS READ FROM DB: " + pulsesRepository.countBpulsesRQ() + " INSERTED RECORDS: " + pulsesRepository.getInsertedRecords() + " EN PROCESO " +  pulsesRepository.countMarkBpulseKeyInProgress() + " " + Calendar.getInstance().getTime());
+        logger.info("INICIO PROCESAMIENTO PULSOS..." + " RECORDS READ FROM DB: " + pulsesRepository.countBpulsesRQ() + " INSERTED RECORDS: " + pulsesRepository.getInsertedRecords() + " EN PROCESO " +  pulsesRepository.countMarkBpulseKeyInProgress() + " " + Calendar.getInstance().getTime());
         for(Object keyToProcess : keys) {
         //for(Entry next : iterator.iterable()) {
-        	totalKeysRead++;
-        	if (totalKeysRead > maxNumberPulsesToReadFromDB) {
-        		break;
-        	}
-        	String keyPulse = (String) keyToProcess;
+        	Long keyPulse = (Long) keyToProcess;
         	//String keyPulse = new String(next.getKey());
         	//obtain the associated pulse
         	initGets = Calendar.getInstance().getTimeInMillis();
@@ -110,7 +106,7 @@ public class BPulseRestSenderTimer extends TimerTask{
 	        		summarizedPulsesRQToSend = null;
 	        		pulses = PulsesRQ.newBuilder();
 	        		pulses.setVersion(selectedPulsesRQ.getVersion());
-	        		keyPulseListToDelete = new ArrayList<String>();
+	        		keyPulseListToDelete = new ArrayList<Long>();
 	        		pulses.addAllPulse(selectedPulsesRQ.getPulseList());
 	        		totalOfPulsesToSend = totalPulsesOfCurrentKey;
 	        		keyPulseListToDelete.add(keyPulse);
@@ -124,12 +120,11 @@ public class BPulseRestSenderTimer extends TimerTask{
         	summarizedPulsesRQToSend = pulses.build();
     		invokeBPulseRestService(bpulseSender, summarizedPulsesRQToSend, keyPulseListToDelete);
         }
-        System.out.println("FIN PROCESAMIENTO PULSOS...CANTIDAD " + cantidadpulsosreal + " " + Calendar.getInstance().getTime());
-		
+        logger.info("FIN PROCESAMIENTO PULSOS...CANTIDAD " + cantidadpulsosreal + " " + Calendar.getInstance().getTime());
 	}
 
 	private void invokeBPulseRestService(BPulseSender client, PulsesRQ summarizedPulsesRQToSend,
-			List<String> keysToDelete) {
+			List<Long> keysToDelete) {
 		client.executeBPulseRestService(summarizedPulsesRQToSend, keysToDelete);
 	}
 

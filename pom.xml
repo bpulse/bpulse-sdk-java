@@ -8,7 +8,7 @@
 		<artifactId>all-index-parent</artifactId>
 		<version>1.0.0</version>
 	</parent>
-	<!--groupId>com.innova4j</groupId-->
+	<!--groupId>com.innova4j</groupId -->
 	<artifactId>bpulse-java-client</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>bpulse-java-client</name>
@@ -96,6 +96,13 @@
 			<artifactId>h2</artifactId>
 			<version>1.4.186</version>
 		</dependency>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+
 
 	</dependencies>
 	<build>

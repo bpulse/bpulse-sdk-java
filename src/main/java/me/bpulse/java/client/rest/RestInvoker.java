@@ -8,6 +8,7 @@ import me.bpulse.domain.proto.collector.CollectorMessageRQ.PulsesRQ;
 import org.apache.http.HttpEntity;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
@@ -86,7 +87,7 @@ public class RestInvoker {
 	public <T> ExtraResponse <T> postWithProcess(final String pUrl,
 			final PulsesRQ pInput,
 			final ResponseHandler <T> pResponseHandler)
-	throws UnsupportedEncodingException {		
+	throws UnsupportedEncodingException, ClientProtocolException {		
 		T processResponse = null;
 		ExtraResponse<T> extraResponse = null;
 		long wsTime;
@@ -116,6 +117,8 @@ public class RestInvoker {
 
 			extraResponse = new ExtraResponse<T>(wsTime, processResponse);
 
+		} catch (ClientProtocolException e) {
+			throw e;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

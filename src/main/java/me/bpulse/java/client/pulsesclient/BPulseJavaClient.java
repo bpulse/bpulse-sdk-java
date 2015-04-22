@@ -40,17 +40,7 @@ public class BPulseJavaClient {
 	private synchronized void start() {
 		
 		if (!isStarted) {
-			
-			String propMaxNumberRQsToReadFromDB = PropertiesManager.getProperty(BPULSE_PROPERTY_MAX_NUMBER_PULSES_TO_PROCESS_TIMER);
-			int maxNumberRQsToReadFromDB = COMMON_NUMBER_0;
-			
-			if (propMaxNumberRQsToReadFromDB != null) {
-				maxNumberRQsToReadFromDB = Integer.parseInt(propMaxNumberRQsToReadFromDB);
-			} else {
-				maxNumberRQsToReadFromDB = COMMON_NUMBER_180000;
-			}
-			
-			TimerTask timerTask = new BPulseRestSenderTimer(bpulseSender, maxNumberRQsToReadFromDB);
+			TimerTask timerTask = new BPulseRestSenderTimer(bpulseSender);
 	        Timer timer = new Timer();
 	        String periodInMinutesNextExecutionTimer = PropertiesManager.getProperty(BPULSE_PROPERTY_USER_TIMER_DELAY);
 	        long periodInMillis = COMMON_NUMBER_0;

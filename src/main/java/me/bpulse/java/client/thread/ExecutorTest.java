@@ -140,7 +140,7 @@ public class ExecutorTest {
         //Object[] keys = pulsesRepository.getSortedbpulseRQMapKeys();
 		int before = 0;// pulsesRepository.countBpulsesRQ();
 		System.out.println("KEYS GENERATED BEFORE: " + before + " "  + Calendar.getInstance().getTime());
-        int nrecords = 300000;
+        int nrecords = 60000;
         long initTime = System.currentTimeMillis();
         long globalEndTime = System.currentTimeMillis();
         boolean flagStopTimeInserted = false;

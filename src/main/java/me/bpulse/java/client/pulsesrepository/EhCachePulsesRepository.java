@@ -235,6 +235,30 @@ public class EhCachePulsesRepository implements IPulsesRepository {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public PulsesRQ getBpulseRQByKey(Long pKey) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deleteBpulseRQByKey(Long pKey) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void markBpulseKeyInProgress(Long pKey) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void releaseBpulseKeyInProgressByKey(Long pKey) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 
 }

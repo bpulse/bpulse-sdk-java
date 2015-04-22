@@ -42,4 +42,12 @@ public interface IPulsesRepository {
 	
 	public void endTransaction();
 
+	PulsesRQ getBpulseRQByKey(Long pKey);
+
+	void deleteBpulseRQByKey(Long pKey);
+
+	void markBpulseKeyInProgress(Long pKey);
+
+	void releaseBpulseKeyInProgressByKey(Long pKey);
+
 }
