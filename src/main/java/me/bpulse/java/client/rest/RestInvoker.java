@@ -1,3 +1,6 @@
+/**
+ *  @Copyright (c) BPulse - http://www.bpulse.me
+ */
 package me.bpulse.java.client.rest;
 
 import java.io.IOException;
@@ -22,6 +25,11 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
+/**
+ * @author BPulse team
+ * 
+ * @Copyright (c) BPulse - http://www.bpulse.me
+ */
 /**
  * Utilidad para abstraer el envio de credenciales al Collector, la
  * invocaci&oacute;n del servicio y el procesamiento de la respuesta.

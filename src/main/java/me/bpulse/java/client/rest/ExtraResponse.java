@@ -1,5 +1,13 @@
+/**
+ *  @Copyright (c) BPulse - http://www.bpulse.me
+ */
 package me.bpulse.java.client.rest;
 
+/**
+ * @author BPulse team
+ * 
+ * @Copyright (c) BPulse - http://www.bpulse.me
+ */
 /**
  * Almacena informaci&oacuet;n de respuesta de un petici&oacute;n REST
  * m&aacute;s una serie otros datos que puedan ser de utilidad, como el tiempo

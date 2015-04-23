@@ -1,3 +1,6 @@
+/**
+ *  @Copyright (c) BPulse - http://www.bpulse.me
+ */
 package me.bpulse.java.client.properties;
 
 import java.io.FileInputStream;
@@ -7,6 +10,11 @@ import java.util.Properties;
 
 import static me.bpulse.java.client.common.BPulseConstants.BPULSE_PROPERTY_CONFIG_FILE;
 
+/**
+ * @author BPulse team
+ * 
+ * @Copyright (c) BPulse - http://www.bpulse.me
+ */
 public class PropertiesManager {
 	
 	static Properties prop = null;
@@ -41,6 +49,12 @@ public class PropertiesManager {
 		
 	}
 	
+	/**
+	 * Method that gets the associated value to the specified propertyName.
+	 * 
+	 * @param propertyName The declared property name in the config.properties file.
+	 * @return Associated value to the property name.
+	 */
 	public static String getProperty(String propertyName) {
 		if (prop != null) {
 			return prop.getProperty(propertyName);

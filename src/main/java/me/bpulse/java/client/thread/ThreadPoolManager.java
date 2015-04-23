@@ -1,3 +1,6 @@
+/**
+ *  @Copyright (c) BPulse - http://www.bpulse.me
+ */
 package me.bpulse.java.client.thread;
 
 import java.util.concurrent.ExecutorService;
@@ -14,12 +17,18 @@ import java.util.concurrent.TimeUnit;
 
 import me.bpulse.java.client.properties.PropertiesManager;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+import org.slf4j.*;
 
+/**
+ * @author BPulse team
+ * 
+ * @Copyright (c) BPulse - http://www.bpulse.me
+ */
 public class ThreadPoolManager {
 	
 	/** Log de la clase. */
-	private static Logger logger = Logger.getLogger(ThreadPoolManager.class);
+	private static Logger logger = LoggerFactory.getLogger(ThreadPoolManager.class);
 	private ExecutorService threadPool;
 	
 	public ThreadPoolManager(int pPoolSize) {

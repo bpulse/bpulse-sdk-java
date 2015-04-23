@@ -1,32 +1,24 @@
+/**
+ *  @Copyright (c) BPulse - http://www.bpulse.me
+ */
 package me.bpulse.java.client.pulsesrepository;
-
-import org.fusesource.lmdbjni.EntryIterator;
 
 import me.bpulse.domain.proto.collector.CollectorMessageRQ.PulsesRQ;
 
+/**
+ * @author BPulse team
+ * 
+ * @Copyright (c) BPulse - http://www.bpulse.me
+ */
 public interface IPulsesRepository {
 	
-	public void savePulse(PulsesRQ pPulsesRQ);
+	public void savePulse(PulsesRQ pPulsesRQ) throws Exception;
 	
-	public Object[] getSortedbpulseRQMapKeys();
+	public Object[] getSortedbpulseRQMapKeys() throws Exception;
 	
-	public EntryIterator getIterableEntriesBpulseRQMapKeys();
+	public int countBpulsesRQ() throws Exception;
 	
-	public PulsesRQ getBpulseRQByKey(String pKey);
-	
-	public byte[] getSerializedBpulseRQByKey(String pKey);
-	
-	public void deleteBpulseRQByKey(String pKey);
-	
-	public int countBpulsesRQ();
-	
-	public void markBpulseKeyInProgress(String pKey);
-	
-	public String getMarkedBPulseKeyInProgress(String pKey);
-	
-	public int countMarkBpulseKeyInProgress();
-	
-	public void releaseBpulseKeyInProgressByKey(String pKey);
+	public int countMarkBpulseKeyInProgress() throws Exception;
 	
 	public int getInsertedRecords();
 	
@@ -38,16 +30,14 @@ public interface IPulsesRepository {
 	
 	public long getSortedKeysTimeMillisAverage();
 	
-	public void initTransaction();
+	PulsesRQ getBpulseRQByKey(Long pKey) throws Exception;
+
+	void deleteBpulseRQByKey(Long pKey) throws Exception;
+
+	void markBpulseKeyInProgress(Long pKey) throws Exception;
+
+	void releaseBpulseKeyInProgressByKey(Long pKey) throws Exception;
 	
-	public void endTransaction();
-
-	PulsesRQ getBpulseRQByKey(Long pKey);
-
-	void deleteBpulseRQByKey(Long pKey);
-
-	void markBpulseKeyInProgress(Long pKey);
-
-	void releaseBpulseKeyInProgressByKey(Long pKey);
+	public long getDBSize();
 
 }

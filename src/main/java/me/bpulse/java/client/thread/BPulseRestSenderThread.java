@@ -1,3 +1,6 @@
+/**
+ *  @Copyright (c) BPulse - http://www.bpulse.me
+ */
 package me.bpulse.java.client.thread;
 
 import java.io.BufferedReader;
@@ -12,7 +15,8 @@ import java.util.List;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+import org.slf4j.*;
 
 import com.google.protobuf.Message;
 
@@ -24,6 +28,11 @@ import me.bpulse.java.client.rest.RestInvoker;
 import me.bpulse.java.client.rest.RestInvoker.TestContentType;
 import static me.bpulse.java.client.common.BPulseConstants.BPULSE_REST_HTTP_CREATED;
 
+/**
+ * @author BPulse team
+ * 
+ * @Copyright (c) BPulse - http://www.bpulse.me
+ */
 public class BPulseRestSenderThread implements Runnable{
 
 	private PulsesRQ pulseToSendByRest;
@@ -32,7 +41,7 @@ public class BPulseRestSenderThread implements Runnable{
 	private RestInvoker restInvoker;
 	private String bpulseRestURL;
 	private String id;
-	final static Logger logger = Logger.getLogger(BPulseRestSenderThread.class);
+	final static Logger logger = LoggerFactory.getLogger(BPulseRestSenderThread.class);
 	
 	public BPulseRestSenderThread(String pThreadId, PulsesRQ pPulseToSendByRest, IPulsesRepository pDbPulsesRepository,List<Long> pKeysToDelete, RestInvoker pRestInvoker, String pUrl) {
 		this.pulseToSendByRest = pPulseToSendByRest;
@@ -46,26 +55,38 @@ public class BPulseRestSenderThread implements Runnable{
 	@Override
 	public void run() {
 		try {
-			long initTime = Calendar.getInstance().getTimeInMillis();
 			invokeRestService();
-			logger.info("BPULSE REST TIME: " + (Calendar.getInstance().getTimeInMillis() - initTime));
 			deletePulseKeysProcessedByRest();
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
-			logger.error("BPULSE REST ClientProtocolException: " + e.getMessage());
-			releaseCurrentBPulseInProgressKeys();
+			logger.error("FAILED INVOKING BPULSE REST SERVICE: " + e.getMessage());
+			try {
+				releaseCurrentBPulseInProgressKeys();
+			} catch (Exception e1) {
+			}
 		} catch (Exception e) {
-			logger.error("BPULSE REST ERROR: " + e.getMessage());
-			releaseCurrentBPulseInProgressKeys();
+			logger.error("FAILED INVOKING BPULSE REST SERVICE: " + e.getMessage());
+			try {
+				releaseCurrentBPulseInProgressKeys();
+			} catch (Exception e1) {
+			}
 		}
 	}
 	
-	private synchronized void releaseCurrentBPulseInProgressKeys() {
+	/**
+	 * Method that performs the call of the releaseBpulseKeyInProgressByKey method.
+	 * 
+	 */
+	private synchronized void releaseCurrentBPulseInProgressKeys() throws Exception {
 		for(Long keyToDelete : this.keysToDelete) {
 			this.dbPulsesRepository.releaseBpulseKeyInProgressByKey(keyToDelete);
 		}
 	}
 
+	/**
+	 * Method that performs the invoke of the BPULSE REST SERVICE.
+	 * 
+	 */
 	private synchronized void invokeRestService() throws ClientProtocolException, UnsupportedEncodingException, Exception {
 		try {
 			ExtraResponse<PulsesRS> response = this.restInvoker.postWithProcess(this.bpulseRestURL, this.pulseToSendByRest, new BPulseResponseHandler());
@@ -77,7 +98,11 @@ public class BPulseRestSenderThread implements Runnable{
 			}*/
 	}
 	
-	private synchronized void deletePulseKeysProcessedByRest() {
+	/**
+	 * Method that performs the call of the delete pulses from PULSESDB method with keysToDelete LIST.
+	 * 
+	 */
+	private synchronized void deletePulseKeysProcessedByRest() throws Exception {
 		for(Long keyToDelete : this.keysToDelete) {
 			this.dbPulsesRepository.deleteBpulseRQByKey(keyToDelete);
 		}
@@ -116,7 +141,6 @@ public class BPulseRestSenderThread implements Runnable{
 		public PulsesRS handleResponse (final HttpResponse pRestResponse)
 				throws ClientProtocolException, IOException {
 			PulsesRS generatedPulseRS;
-			System.out.println("HTTP STATUS: " + pRestResponse.getStatusLine().getStatusCode() + ", " + pRestResponse.getStatusLine().getReasonPhrase());
 			if (pRestResponse.getStatusLine().getStatusCode() != BPULSE_REST_HTTP_CREATED) {
 				throw new ClientProtocolException("HTTP ERROR: " + pRestResponse.getStatusLine().getStatusCode() + " " + pRestResponse.getStatusLine().getReasonPhrase());
 			}

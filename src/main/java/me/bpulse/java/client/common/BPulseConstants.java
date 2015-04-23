@@ -1,10 +1,19 @@
+/**
+ *  @Copyright (c) BPulse - http://www.bpulse.me
+ */
 package me.bpulse.java.client.common;
 
+/**
+ * @author BPulse team
+ * 
+ * @Copyright (c) BPulse - http://www.bpulse.me
+ */
 public class BPulseConstants {
 	
 	public static final long DEFAULT_TIMER_MIN_DELAY = 60000;
 	public static final long DEFAULT_TIMER_MAX_NUMBER_GROUPED_PULSES = 1000;
 	public static final int DEFAULT_REST_INVOKER_TIMEOUT = 30000;
+	public static final long DEFAULT_MAX_PULSESDB_SIZE_BYTES = 1073741824;
 	public static final int COMMON_NUMBER_60 = 60;
 	public static final int COMMON_NUMBER_1000 = 1000;
 	public static final int COMMON_NUMBER_0 = 0;
@@ -29,6 +38,7 @@ public class BPulseConstants {
 	public static final String BPULSE_PROPERTY_USER_CREDENTIALS_PASSWORD = "bpulse.client.bpulsePassword";
 	public static final String BPULSE_PROPERTY_URL_REST_SERVICE = "bpulse.client.bpulseRestURL";
 	public static final String BPULSE_PROPERTY_MAX_NUMBER_PULSES_TO_PROCESS_TIMER = "bpulse.client.maxNumberPulsesReadFromTimer";
+	public static final String BPULSE_PROPERTY_MAX_PULSESDB_SIZE_BYTES = "bpulse.client.pulsesRepositoryDBMaxSizeBytes";
 	
 
 }
