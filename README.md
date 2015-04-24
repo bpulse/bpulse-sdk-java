@@ -9,11 +9,16 @@ BPulse Java Client is a maven project. It requires the following dependencies fo
 
 * bpulse-java-client
 
+
+```
+#!xml
 <dependency>
 	<groupId>me.bpulse</groupId>
 	<artifactId>bpulse-java-client</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 </dependency>
+
+```
 
 * SLF4J Logging Framework Bindings
 
