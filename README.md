@@ -112,4 +112,4 @@ If your target application is not a maven project, you must include the followin
 |bpulse.client.bpulsePassword|Client's Password  for sending pulses to BPULSE COLLECTOR SERVICE.
 |bpulse.client.bpulseRestURL| BPULSE COLLECTOR REST SERVICE URL.
 |bpulse.client.pulsesRepositoryDBPath|System Path to create the Pulses Repository (e.g C:/tmp/pulses_repository). 
-|bpulse.client.pulsesRepositoryDBMaxSizeBytes|Pulses Repositories' Allowed max size in bytes (default = 1073741824).
+|bpulse.client.pulsesRepositoryDBMaxSizeBytes|Pulses Repositories' Allowed max size in bytes (default value = 1073741824).
