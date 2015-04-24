@@ -140,7 +140,6 @@ public class BPulseSender {
 	public synchronized String sendPulse(PulsesRQ pulse) {
 		Random random = new Random();
 		long additionalPulseId = random.nextLong();
-		logger.info("CURRENT BPULSE DBFILE SIZE (BYTES): " + this.pulsesRepository.getDBSize());
 		if (maxDBSizeBytes > this.pulsesRepository.getDBSize()) {
 			PulsesSenderThread thread = new PulsesSenderThread("THREAD-"+System.currentTimeMillis() + additionalPulseId, pulse, this.pulsesRepository);
 			persistPulsesThreadPool.getThreadPoolExecutor().execute(thread);

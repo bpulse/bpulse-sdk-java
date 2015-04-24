@@ -32,12 +32,14 @@ public class BPulseJavaClient {
 	private static boolean isStarted = false;
 	private static BPulseJavaClient instance;
 	private BPulseSender bpulseSender;
-	final static Logger logger = LoggerFactory.getLogger(BPulseRestSenderTimer.class);
+	final static Logger logger = LoggerFactory.getLogger(BPulseJavaClient.class);
 	
 	protected BPulseJavaClient() throws Exception {
+		logger.info("GET INSTANCE BpulseJavaClient...");
 		bpulseSender = BPulseSender.getInstance();
 		//isStarted = true;
 		start();
+		logger.info("GET INSTANCE BpulseJavaClient SUCCESSFUL.");
 	}
 	
 	/**
@@ -45,12 +47,9 @@ public class BPulseJavaClient {
 	 * 
 	 */
 	public synchronized static BPulseJavaClient getInstance() throws Exception {
-		
-		logger.info("GET INSTANCE BpulseJavaClient...");
 		if(instance == null) {
 			instance = new BPulseJavaClient();
 		}
-		logger.info("GET INSTANCE BpulseJavaClient SUCCESSFUL.");
 		return instance;
 	}
 	

@@ -91,11 +91,12 @@ public class RestInvoker {
 	 * 
 	 * @return el resultado de procesar la respuesta del servicio REST con un
 	 *         ResponseHandler
+	 * @throws IOException 
 	 */
 	public <T> ExtraResponse <T> postWithProcess(final String pUrl,
 			final PulsesRQ pInput,
 			final ResponseHandler <T> pResponseHandler)
-	throws UnsupportedEncodingException, ClientProtocolException {		
+	throws IOException {		
 		T processResponse = null;
 		ExtraResponse<T> extraResponse = null;
 		long wsTime;
@@ -129,6 +130,7 @@ public class RestInvoker {
 			throw e;
 		} catch (IOException e) {
 			e.printStackTrace();
+			throw e;
 		}
 
 		return extraResponse;

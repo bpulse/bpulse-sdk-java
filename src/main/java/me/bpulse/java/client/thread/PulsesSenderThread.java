@@ -1,11 +1,18 @@
+/**
+ *  @Copyright (c) BPulse - http://www.bpulse.me
+ */
 package me.bpulse.java.client.thread;
 
 import javax.sql.rowset.spi.SyncResolver;
 
 import me.bpulse.domain.proto.collector.CollectorMessageRQ.PulsesRQ;
 import me.bpulse.java.client.pulsesrepository.IPulsesRepository;
-import me.bpulse.java.client.pulsesrepository.PulsesRepository;
 
+/**
+ * @author BPulse team
+ * 
+ * @Copyright (c) BPulse - http://www.bpulse.me
+ */
 public class PulsesSenderThread implements Runnable{
 	
 	private PulsesRQ pulseRQToPersist;
@@ -19,10 +26,19 @@ public class PulsesSenderThread implements Runnable{
 	}
 
 	public void run() {
-		sendPulseToRepository();
+		try {
+			sendPulseToRepository();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
-	public synchronized void  sendPulseToRepository() {
+	/**
+	 * Method that performs the call of the savePulse method of PulsesRepository.
+	 * 
+	 */
+	public synchronized void  sendPulseToRepository() throws Exception {
 		this.dbPulsesRepository.savePulse(this.pulseRQToPersist);
 	}
 
