@@ -100,7 +100,35 @@ If your target application is not a maven project, you must include the followin
  * slf4j-api-1.7.5.jar
  * Corresponding Binding for used logging framework (See **Binding with a logging framework at deployment time** at [http://www.slf4j.org/manual.html](http://www.slf4j.org/manual.html))
 
+### HOW TO USE ###
+
+Bpulse java client uses BPulseJavaClient class for pulses sending to BPULSE. It implements two methods: getInstance() and sendPulse(PulsesRQ) for create/load pulses repository and assign the number of threads for insert pulses into the repository and the sending of them via BPULSE COLLECTOR REST SERVICE.
+
+```
+#!java
+
+//get the BPulseJavaClient instance. It manages the pulses repository and begins the pulses notification timer.
+BPulseJavaClient client = BPulseJavaClient.getInstance();
+.
+.
+.
+/*Definition of pulse to send*/
+PulsesRQ pulseToSend = ...;
+.
+.
+.
+//invoke the operation for inserting the pulse into pulses repository.
+client.sendPulse(this.pulseToSend);
+.
+.
+.
+
+```
+
+
 ### Available Configuration Parameters ###
+
+BPulse java client has a configuration file to define the main parameters for sending and processing pulses (pulses repository path, number of threads for notifying pulses via BPULSE COLLECTOR REST SERVICE, etc.). It's definition is expected through java options property **bpulse.client.config** (e.g **-Dbpulse.client.config=C:\tmp\config.properties**)
 
 |Variable name|Description
 |          --:|--
