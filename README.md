@@ -151,16 +151,13 @@ An example of configuration file is shown:
 #!properties
 
 #BPULSE JAVA CLIENT CONFIGURATION PROPERTIES
-#bpulse.client.config=C:\tmp\config.properties
 bpulse.client.initNumThreadsSendPulses=100
 bpulse.client.initNumThreadsRestInvoker=60
 bpulse.client.periodInMinutesNextExecTimer=1
 bpulse.client.maxNumberPulsesReadFromTimer=240000
-#bpulse.client.bpulseUsername=bulk_collector@clienteuno.com
 bpulse.client.bpulseUsername=test_collector@enterprise01.com
 bpulse.client.bpulsePassword=ABclienteuno123
 bpulse.client.bpulseRestURL=http://192.168.0.130:8080/app.collector/collector/pulses
-#bpulse.client.pulsesRepositoryDBPath=C:\\tmp\\pulses_repository\\BPULSEDB
 bpulse.client.pulsesRepositoryDBPath=C:/tmp/pulses_repository
 bpulse.client.pulsesRepositoryDBMaxSizeBytes=10737418240
 ```
