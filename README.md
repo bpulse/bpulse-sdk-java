@@ -102,14 +102,16 @@ If your target application is not a maven project, you must include the followin
 
 ### Available Configuration Parameters ###
 
-|Variable name|Default value
-|          --:|--
-|HZ_CLUSTER_GROUP_NAME|web-bpulse-live
-|HZ_CLUSTER_GROUP_PASSWORD|collector
-|HZ_NETWORK_PORT|6702
-|HZ_MEMBERS|localhost
-|HZ_MANAGEMENT_CENTER|http://localhost:9900/mancenter
-|ELASTICSEARCH_HOSTS *|elasticsearch
-|ELASTICSEARCH_CLUSTERNAME|Local-Cluster
-|ELASTICSEARCH_HOSTPORTS|9300
-|ELASTICSEARCH_CLUSTERNODES *|elasticsearch:9300
+|Variable name|Default value|Default value
+|          --:|--|--
+|bpulse.client.initNumThreadsSendPulses|web-bpulse-live
+|bpulse.client.initNumThreadsRestInvoker|collector
+|bpulse.client.maxNumThreadsSendPulses|6702
+|bpulse.client.keepTimeAliveMillisThreadSendPulses|localhost
+|bpulse.client.periodInMinutesNextExecTimer|http://localhost:9900/mancenter
+|bpulse.client.maxNumberPulsesReadFromTimer|elasticsearch
+|bpulse.client.bpulseUsername|Local-Cluster
+|bpulse.client.bpulsePassword|9300
+|bpulse.client.bpulseRestURL|elasticsearch:9300
+|bpulse.client.pulsesRepositoryDBPath|elasticsearch:9300
+|bpulse.client.pulsesRepositoryDBMaxSizeBytes|elasticsearch:9300
