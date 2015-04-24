@@ -7,7 +7,7 @@ This README explains how to integrate the conector with the target client applic
 
 BPulse Java Client is a maven project. It requires the following dependencies for being used in any java maven project:
 
-* bpulse-java-client
+* **bpulse-java-client**
 
 
 ```
@@ -20,7 +20,7 @@ BPulse Java Client is a maven project. It requires the following dependencies fo
 
 ```
 
-* SLF4J Logging Framework Bindings
+* **SLF4J Logging Framework Bindings**
 
 BPulse Java Client uses SLF4J API for register logs from pulses processing and sending via BPULSE REST SERVICE. SLF4J uses a set of binding dependencies for each
 supported logging framework (log4j, tinylog, jdk logging, logback). If the target application uses someone of these frameworks, it's neccessary add the related 
