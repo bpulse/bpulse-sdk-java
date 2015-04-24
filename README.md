@@ -80,3 +80,22 @@ In the case of log4j it would be like this:
 </dependency>
 
 ```
+
+If your target application is not a maven project, you must include the following jars in your libs folder:
+
+* BPulse dependencies
+ * bpulse.java.client-1.0.0-SNAPSHOT.jar
+ * bpulse.protobuf-0.3.3-SNAPSHOT.jar
+* Google Protobuf dependencies
+ * protobuf-java-format-1.2.jar
+ * protobuf-java.2.5.0.jar
+* Apache http dependencies
+ * httpclient-4.4.1.jar
+ * httpcore-4.4.1.jar
+ * commons-logging-1.2.jar
+ * commons-codec-1.9.jar
+* H2 Database Engine dependencies
+ * h2-1.4.186.jar
+* SLF4J dependencies
+ * slf4j-api-1.7.5.jar
+ * Corresponding Binding for used logging framework (See **Binding with a logging framework at deployment time** at [http://www.slf4j.org/manual.html](http://www.slf4j.org/manual.html))
