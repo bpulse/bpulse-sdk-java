@@ -102,16 +102,14 @@ If your target application is not a maven project, you must include the followin
 
 ### Available Configuration Parameters ###
 
-|Variable name|Default value|Default value
-|          --:|--|--
-|bpulse.client.initNumThreadsSendPulses|web-bpulse-live
-|bpulse.client.initNumThreadsRestInvoker|collector
-|bpulse.client.maxNumThreadsSendPulses|6702
-|bpulse.client.keepTimeAliveMillisThreadSendPulses|localhost
-|bpulse.client.periodInMinutesNextExecTimer|http://localhost:9900/mancenter
-|bpulse.client.maxNumberPulsesReadFromTimer|elasticsearch
-|bpulse.client.bpulseUsername|Local-Cluster
-|bpulse.client.bpulsePassword|9300
-|bpulse.client.bpulseRestURL|elasticsearch:9300
-|bpulse.client.pulsesRepositoryDBPath|elasticsearch:9300
-|bpulse.client.pulsesRepositoryDBMaxSizeBytes|elasticsearch:9300
+|Variable name|Description
+|          --:|--
+|bpulse.client.initNumThreadsSendPulses|Number of threads for supporting the sendPulses from target client application to bpulse.java.client (default value = 5).
+|bpulse.client.initNumThreadsRestInvoker|Number of threads for supporting the bpulse.java.client pulses notification through BPULSE COLLECTOR REST SERVICE (default value = 5).
+|bpulse.client.periodInMinutesNextExecTimer|Delay time in minutes between timer executions for pulses notification (default value = 1).
+|bpulse.client.maxNumberPulsesReadFromTimer|Max number of read pulses for each timer execution from pulsesRepositoryDB for sending to BPULSE COLLECTOR REST SERVICE (default value = 180000).
+|bpulse.client.bpulseUsername|Client's Username for sending pulses to BPULSE COLLECTOR SERVICE.
+|bpulse.client.bpulsePassword|Client's Password  for sending pulses to BPULSE COLLECTOR SERVICE.
+|bpulse.client.bpulseRestURL| BPULSE COLLECTOR REST SERVICE URL.
+|bpulse.client.pulsesRepositoryDBPath|System Path to create the Pulses Repository (e.g C:/tmp/pulses_repository). 
+|bpulse.client.pulsesRepositoryDBMaxSizeBytes|Pulses Repositories' Allowed max size in bytes (default = 1073741824).
