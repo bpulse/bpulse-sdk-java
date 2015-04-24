@@ -21,6 +21,9 @@ BPulse Java Client uses SLF4J API for register logs from pulses processing and s
 supported logging framework (log4j, tinylog, jdk logging, logback). If the target application uses someone of these frameworks, it's neccessary add the related 
 binding dependency like these:
 
+
+```
+#!xml
 <!-- Dependency for Tinylog binding -->
 <dependency>
 	<groupId>org.tinylog</groupId>
@@ -42,10 +45,15 @@ binding dependency like these:
 	<version>1.7.5</version> 
 </dependency>
 
+```
+
 Each binding is associated with a version of logging API (i.e in the log4j case, the version 1.7.5 of slf4j-log4j12 uses by default Apache log4j 1.2.17).
 If your target application uses another version for these logging APIs, you must excludes it from the maven dependency and manage your own logging version. 
 In the case of log4j it would be like this:
 
+
+```
+#!xml
 <!-- Excludes the log4j default version managed by SLF4J binding -->
 <dependency> 
 	<groupId>org.slf4j</groupId> 
@@ -65,3 +73,5 @@ In the case of log4j it would be like this:
 	<artifactId>log4j</artifactId> 
 	<version>1.2.12</version> 
 </dependency>
+
+```
