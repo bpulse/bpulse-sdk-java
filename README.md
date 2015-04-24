@@ -102,8 +102,6 @@ If your target application is not a maven project, you must include the followin
 
 ### Available Configuration Parameters ###
 
-### quay.io/innova4j/app.kpi-es
-
 |Variable name|Default value
 |          --:|--
 |HZ_CLUSTER_GROUP_NAME|web-bpulse-live
