@@ -1,6 +1,6 @@
 # README #
 
-BPulse Java Client is a conector between any client subscribed to BPULSE Service and the REST PULSES COLLECTOR SERVICE.
+BPulse Java Client is a conector between any client subscribed to BPULSE Service and the PULSES COLLECTOR REST SERVICE.
 This README explains how to integrate the conector with the target client application, configuration parameters and how to use it.
 
 ### REQUIREMENTS ###
