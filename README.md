@@ -99,3 +99,19 @@ If your target application is not a maven project, you must include the followin
 * SLF4J dependencies
  * slf4j-api-1.7.5.jar
  * Corresponding Binding for used logging framework (See **Binding with a logging framework at deployment time** at [http://www.slf4j.org/manual.html](http://www.slf4j.org/manual.html))
+
+### Available Configuration Parameters ###
+
+### quay.io/innova4j/app.kpi-es
+
+|Variable name|Default value
+|          --:|--
+|HZ_CLUSTER_GROUP_NAME|web-bpulse-live
+|HZ_CLUSTER_GROUP_PASSWORD|collector
+|HZ_NETWORK_PORT|6702
+|HZ_MEMBERS|localhost
+|HZ_MANAGEMENT_CENTER|http://localhost:9900/mancenter
+|ELASTICSEARCH_HOSTS *|elasticsearch
+|ELASTICSEARCH_CLUSTERNAME|Local-Cluster
+|ELASTICSEARCH_HOSTPORTS|9300
+|ELASTICSEARCH_CLUSTERNODES *|elasticsearch:9300
