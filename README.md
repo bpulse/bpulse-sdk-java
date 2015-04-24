@@ -128,7 +128,9 @@ client.sendPulse(this.pulseToSend);
 
 ### Available Configuration Parameters ###
 
-BPulse java client has a configuration file to define the main parameters for sending and processing pulses (pulses repository path, number of threads for notifying pulses via BPULSE COLLECTOR REST SERVICE, etc.). It's definition is expected through java options property **bpulse.client.config** (e.g **-Dbpulse.client.config=C:\tmp\config.properties**)
+BPulse java client has a configuration file to define the main parameters for sending and processing pulses (pulses repository path, number of threads for notifying pulses via BPULSE COLLECTOR REST SERVICE, etc.). It's definition is expected through java options property **bpulse.client.config** (e.g **-Dbpulse.client.config=C:\tmp\config.properties**).
+
+All properties are defined below:
 
 |Variable name|Description
 |          --:|--
@@ -141,3 +143,24 @@ BPulse java client has a configuration file to define the main parameters for se
 |bpulse.client.bpulseRestURL| BPULSE COLLECTOR REST SERVICE URL.
 |bpulse.client.pulsesRepositoryDBPath|System Path to create the Pulses Repository (e.g C:/tmp/pulses_repository). 
 |bpulse.client.pulsesRepositoryDBMaxSizeBytes|Pulses Repositories' Allowed max size in bytes (default value = 1073741824).
+
+An example of configuration file is shown:
+
+
+```
+#!properties
+
+#BPULSE JAVA CLIENT CONFIGURATION PROPERTIES
+#bpulse.client.config=C:\tmp\config.properties
+bpulse.client.initNumThreadsSendPulses=100
+bpulse.client.initNumThreadsRestInvoker=60
+bpulse.client.periodInMinutesNextExecTimer=1
+bpulse.client.maxNumberPulsesReadFromTimer=240000
+#bpulse.client.bpulseUsername=bulk_collector@clienteuno.com
+bpulse.client.bpulseUsername=test_collector@enterprise01.com
+bpulse.client.bpulsePassword=ABclienteuno123
+bpulse.client.bpulseRestURL=http://192.168.0.130:8080/app.collector/collector/pulses
+#bpulse.client.pulsesRepositoryDBPath=C:\\tmp\\pulses_repository\\BPULSEDB
+bpulse.client.pulsesRepositoryDBPath=C:/tmp/pulses_repository
+bpulse.client.pulsesRepositoryDBMaxSizeBytes=10737418240
+```
