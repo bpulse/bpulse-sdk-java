@@ -90,6 +90,9 @@ public class BPulseRestSenderThread implements Runnable{
 	private synchronized void invokeRestService() throws ClientProtocolException, UnsupportedEncodingException, Exception {
 		try {
 			ExtraResponse<PulsesRS> response = this.restInvoker.postWithProcess(this.bpulseRestURL, this.pulseToSendByRest, new BPulseResponseHandler());
+			if (response == null || !response.getResponse().getStatus().equals(PulsesRS.StatusType.OK)) {
+				throw new Exception("REST RESPONSE WASN'T SUCCESSFUL: " + response.getResponse().getStatus());
+			}
 		} catch (Exception e) {
 			throw e;
 		}
