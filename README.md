@@ -162,6 +162,8 @@ log4j.appender.file.MaxBackupIndex=10
 </configuration>
 ``` 
 
+In case of the target system has its own logging properties file, it's necessary to add the corresponding lines mentioned above to it.
+
 ### HOW TO USE ###
 
 Bpulse java client uses BPulseJavaClient class for pulses sending to BPULSE. It implements two methods: getInstance() and sendPulse(PulsesRQ) for create/load pulses repository and assign the number of threads for insert pulses into the repository and the sending of them via BPULSE COLLECTOR REST SERVICE.
