@@ -100,6 +100,16 @@ If your target application is not a maven project, you must include the followin
  * slf4j-api-1.7.5.jar
  * Corresponding Binding for used logging framework (See **Binding with a logging framework at deployment time** at [http://www.slf4j.org/manual.html](http://www.slf4j.org/manual.html))
 
+### Logging Configuration Parameters ###
+
+After selecting the logging api, it's necessary to add a java option according to the used logging framework.
+
+-Dtinylog.configuration=C:\tmp\tinylog.properties
+
+-Dlog4j.configuration=file:"C:\tmp\log4j.properties"
+
+-Dlogback.configurationFile=C:\tmp\logback.xml 
+
 ### HOW TO USE ###
 
 Bpulse java client uses BPulseJavaClient class for pulses sending to BPULSE. It implements two methods: getInstance() and sendPulse(PulsesRQ) for create/load pulses repository and assign the number of threads for insert pulses into the repository and the sending of them via BPULSE COLLECTOR REST SERVICE.
