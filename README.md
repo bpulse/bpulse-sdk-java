@@ -135,7 +135,32 @@ log4j.appender.file.MaxFileSize=25MB
 log4j.appender.file.MaxBackupIndex=10
 ```
 
-**logback java option:** -Dlogback.configurationFile=C:\tmp\logback.xml 
+**logback java option:** -Dlogback.configurationFile=C:\tmp\logback.xml
+
+**logback's properties file example:**
+
+```
+<configuration>
+<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>C:/tmp/log/bpulse-java-client-logback.log</file>
+
+    <encoder>
+      <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="debug">
+    <appender-ref ref="FILE" />
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
+``` 
 
 ### HOW TO USE ###
 
