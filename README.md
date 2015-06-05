@@ -102,13 +102,40 @@ If your target application is not a maven project, you must include the followin
 
 ### Logging Configuration Parameters ###
 
-After selecting the logging api, it's necessary to add a java option according to the used logging framework.
+After selecting the logging api, it's necessary to add a java option according to the used logging framework:
 
--Dtinylog.configuration=C:\tmp\tinylog.properties
+**tinylog java option:** -Dtinylog.configuration=C:\tmp\tinylog.properties
 
--Dlog4j.configuration=file:"C:\tmp\log4j.properties"
+**Tinylog's properties file example:**
 
--Dlogback.configurationFile=C:\tmp\logback.xml 
+```
+tinylog.writer = rollingfile
+tinylog.writer.filename = C:/tmp/log/bpulse-java-client-tinylog.log
+tinylog.writer.backups = 10
+tinylog.writer.label = timestamp
+tinylog.writer.policies = startup, size: 10KB
+```
+
+**log4j java option:** -Dlog4j.configuration=file:"C:\tmp\log4j.properties"
+
+**log4j's properties file example:**
+
+```
+##LOG4J CONFIGURATION##
+# Root logger option
+log4j.rootLogger=INFO, file
+# File appender
+log4j.appender.file=org.apache.log4j.RollingFileAppender
+log4j.appender.file.layout=org.apache.log4j.PatternLayout
+#%-7p %d{(dd/MM/yyyy) HH:mm:ss} [%c{1}]%t %m%n
+#%d{yyyy-MM-dd HH:mm:ss} %-5p - %m%n
+log4j.appender.file.layout.ConversionPattern=%-7p %d{(dd/MM/yyyy) HH:mm:ss} [%c{1}]%t %m%n
+log4j.appender.file.File=C:/tmp/log/bpulse-java-client.log
+log4j.appender.file.MaxFileSize=25MB
+log4j.appender.file.MaxBackupIndex=10
+```
+
+**logback java option:** -Dlogback.configurationFile=C:\tmp\logback.xml 
 
 ### HOW TO USE ###
 
