@@ -197,8 +197,6 @@ All properties are defined below:
 
 |Variable name|Description
 |          --:|--
-|bpulse.client.initNumThreadsSendPulses|Number of threads for supporting the sendPulses from target client application to bpulse.java.client (default value = 5).
-|bpulse.client.initNumThreadsRestInvoker|Number of threads for supporting the bpulse.java.client pulses notification through BPULSE COLLECTOR REST SERVICE (default value = 5).
 |bpulse.client.periodInMinutesNextExecTimer|Delay time in minutes between timer executions for pulses notification (default value = 1).
 |bpulse.client.maxNumberPulsesReadFromTimer|Max number of read pulses for each timer execution from pulsesRepositoryDB for sending to BPULSE COLLECTOR REST SERVICE (default value = 180000).
 |bpulse.client.bpulseUsername|Client's Username for sending pulses to BPULSE COLLECTOR SERVICE.
@@ -206,6 +204,8 @@ All properties are defined below:
 |bpulse.client.bpulseRestURL| BPULSE COLLECTOR REST SERVICE URL.
 |bpulse.client.pulsesRepositoryDBPath|System Path to create the Pulses Repository (e.g C:/tmp/pulses_repository). 
 |bpulse.client.pulsesRepositoryDBMaxSizeBytes|Pulses Repositories' Allowed max size in bytes (default value = 1073741824).
+|bpulse.client.pulsesRepositoryMode|Pulses Repositories' Mode:  MEM=PULSES IN MEMORY DB= PULSES IN EMBEDDED DATABASE.
+|bpulse.client.pulsesRepositoryMemMaxNumberPulses|When the pulses repositories' mode is MEM, it's necessary define the maximum number of pulses in memory(default value = 1000000). 
 
 An example of configuration file is shown:
 
@@ -214,8 +214,6 @@ An example of configuration file is shown:
 #!properties
 
 #BPULSE JAVA CLIENT CONFIGURATION PROPERTIES
-bpulse.client.initNumThreadsSendPulses=100
-bpulse.client.initNumThreadsRestInvoker=60
 bpulse.client.periodInMinutesNextExecTimer=1
 bpulse.client.maxNumberPulsesReadFromTimer=240000
 bpulse.client.bpulseUsername=test_collector@enterprise01.com
@@ -223,4 +221,6 @@ bpulse.client.bpulsePassword=ABclienteuno123
 bpulse.client.bpulseRestURL=http://192.168.0.130:8080/app.collector/collector/pulses
 bpulse.client.pulsesRepositoryDBPath=C:/tmp/pulses_repository
 bpulse.client.pulsesRepositoryDBMaxSizeBytes=10737418240
+bpulse.client.pulsesRepositoryMode=MEM
+bpulse.client.pulsesRepositoryMemMaxNumberPulses=750000
 ```
