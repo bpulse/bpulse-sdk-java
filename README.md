@@ -122,17 +122,16 @@ tinylog.writer.policies = startup, size: 10KB
 
 ```
 ##LOG4J CONFIGURATION##
-# Root logger option
-log4j.rootLogger=INFO, file
+log4j.logger.bpulseLogger=INFO, bpulseLogger
 # File appender
-log4j.appender.file=org.apache.log4j.RollingFileAppender
-log4j.appender.file.layout=org.apache.log4j.PatternLayout
+log4j.appender.bpulseLogger=org.apache.log4j.RollingFileAppender
+log4j.appender.bpulseLogger.layout=org.apache.log4j.PatternLayout
 #%-7p %d{(dd/MM/yyyy) HH:mm:ss} [%c{1}]%t %m%n
 #%d{yyyy-MM-dd HH:mm:ss} %-5p - %m%n
-log4j.appender.file.layout.ConversionPattern=%-7p %d{(dd/MM/yyyy) HH:mm:ss} [%c{1}]%t %m%n
-log4j.appender.file.File=C:/tmp/log/bpulse-java-client.log
-log4j.appender.file.MaxFileSize=25MB
-log4j.appender.file.MaxBackupIndex=10
+log4j.appender.bpulseLogger.layout.ConversionPattern=%-7p %d{(dd/MM/yyyy) HH:mm:ss} [%c{1}]%t %m%n
+log4j.appender.bpulseLogger.File=C:/tmp/log/bpulse-java-client.log
+log4j.appender.bpulseLogger.MaxFileSize=25MB
+log4j.appender.bpulseLogger.MaxBackupIndex=10
 ```
 
 **logback java option:** -Dlogback.configurationFile=C:\tmp\logback.xml
