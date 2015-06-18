@@ -100,6 +100,70 @@ If your target application is not a maven project, you must include the followin
  * slf4j-api-1.7.5.jar
  * Corresponding Binding for used logging framework (See **Binding with a logging framework at deployment time** at [http://www.slf4j.org/manual.html](http://www.slf4j.org/manual.html))
 
+### Logging Configuration Parameters ###
+
+After selecting the logging api, it's necessary to add a java option according to the used logging framework:
+
+**tinylog java option:** -Dtinylog.configuration=C:\tmp\tinylog.properties
+
+**Tinylog's properties file example:**
+
+```
+tinylog.writer = rollingfile
+tinylog.writer.filename = C:/tmp/log/bpulse-java-client-tinylog.log
+tinylog.writer.backups = 10
+tinylog.writer.label = timestamp
+tinylog.writer.policies = startup, size: 10KB
+```
+
+**log4j java option:** -Dlog4j.configuration=file:"C:\tmp\log4j.properties"
+
+**log4j's properties file example:**
+
+```
+##LOG4J CONFIGURATION##
+# Root logger option
+log4j.rootLogger=INFO, file
+# File appender
+log4j.appender.file=org.apache.log4j.RollingFileAppender
+log4j.appender.file.layout=org.apache.log4j.PatternLayout
+#%-7p %d{(dd/MM/yyyy) HH:mm:ss} [%c{1}]%t %m%n
+#%d{yyyy-MM-dd HH:mm:ss} %-5p - %m%n
+log4j.appender.file.layout.ConversionPattern=%-7p %d{(dd/MM/yyyy) HH:mm:ss} [%c{1}]%t %m%n
+log4j.appender.file.File=C:/tmp/log/bpulse-java-client.log
+log4j.appender.file.MaxFileSize=25MB
+log4j.appender.file.MaxBackupIndex=10
+```
+
+**logback java option:** -Dlogback.configurationFile=C:\tmp\logback.xml
+
+**logback's properties file example:**
+
+```
+<configuration>
+<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>C:/tmp/log/bpulse-java-client-logback.log</file>
+
+    <encoder>
+      <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="debug">
+    <appender-ref ref="FILE" />
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
+``` 
+
+In case of the target system has its own logging properties file, it's necessary to add the corresponding lines mentioned above to it.
+
 ### HOW TO USE ###
 
 Bpulse java client uses BPulseJavaClient class for pulses sending to BPULSE. It implements two methods: getInstance() and sendPulse(PulsesRQ) for create/load pulses repository and assign the number of threads for insert pulses into the repository and the sending of them via BPULSE COLLECTOR REST SERVICE.
