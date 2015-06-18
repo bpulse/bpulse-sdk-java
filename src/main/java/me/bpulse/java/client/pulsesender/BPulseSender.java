@@ -10,6 +10,7 @@ import me.bpulse.domain.proto.collector.CollectorMessageRQ.PulsesRQ;
 import me.bpulse.java.client.properties.PropertiesManager;
 import me.bpulse.java.client.pulsesrepository.H2PulsesRepository;
 import me.bpulse.java.client.pulsesrepository.IPulsesRepository;
+import me.bpulse.java.client.pulsesrepository.InMemoryPulsesRepository;
 import me.bpulse.java.client.rest.RestInvoker;
 import me.bpulse.java.client.thread.BPulseRestSenderThread;
 import me.bpulse.java.client.thread.PulsesSenderThread;
@@ -26,8 +27,14 @@ import static me.bpulse.java.client.common.BPulseConstants.BPULSE_FAILED_RESPONS
 import static me.bpulse.java.client.common.BPulseConstants.COMMON_NUMBER_0;
 import static me.bpulse.java.client.common.BPulseConstants.COMMON_NUMBER_180000;
 import static me.bpulse.java.client.common.BPulseConstants.COMMON_NUMBER_5;
+import static me.bpulse.java.client.common.BPulseConstants.COMMON_NUMBER_60;
 import static me.bpulse.java.client.common.BPulseConstants.DEFAULT_REST_INVOKER_TIMEOUT;
 import static me.bpulse.java.client.common.BPulseConstants.DEFAULT_MAX_PULSESDB_SIZE_BYTES;
+import static me.bpulse.java.client.common.BPulseConstants.BPULSE_PROPERTY_PULSES_REPOSITORY_MODE;
+import static me.bpulse.java.client.common.BPulseConstants.BPULSE_PROPERTY_MEM_PULSES_REPOSITORY_MAX_NUM_PULSES;
+import static me.bpulse.java.client.common.BPulseConstants.BPULSE_MEM_PULSES_REPOSITORY;
+import static me.bpulse.java.client.common.BPulseConstants.BPULSE_DB_PULSES_REPOSITORY;
+
 import org.slf4j.*;
 
 /**
@@ -44,7 +51,9 @@ public class BPulseSender {
 	private RestInvoker restInvoker;
 	private String bpulseRestUrl;
 	private long maxDBSizeBytes;
-	final static Logger logger = LoggerFactory.getLogger(BPulseSender.class);
+	private long maxMemNumPulses;
+	private String propDBMode;
+	final static Logger logger = LoggerFactory.getLogger("bpulseLogger");
 	
 	
 	/**
@@ -69,7 +78,25 @@ public class BPulseSender {
 			maxDBSizeBytes = DEFAULT_MAX_PULSESDB_SIZE_BYTES;
 		}
 		
-		pulsesRepository = new H2PulsesRepository(maxNumberRQsToReadFromDB);
+		propDBMode = PropertiesManager.getProperty(BPULSE_PROPERTY_PULSES_REPOSITORY_MODE);
+		String propMemMaxNumPulses = PropertiesManager.getProperty(BPULSE_PROPERTY_MEM_PULSES_REPOSITORY_MAX_NUM_PULSES);
+		
+		if(propDBMode == null) {
+			propDBMode = BPULSE_MEM_PULSES_REPOSITORY;
+		}
+		if (propMemMaxNumPulses != null) {
+			maxMemNumPulses = Long.parseLong(propMemMaxNumPulses);
+		} else {
+			maxMemNumPulses = 1000000L;//TODO CONSTANTE
+		}
+		
+		if(propDBMode.equals(BPULSE_DB_PULSES_REPOSITORY)) {
+			logger.info("H2PulsesRepository instance");
+			pulsesRepository = new H2PulsesRepository(maxNumberRQsToReadFromDB);
+		} else if(propDBMode.equals(BPULSE_MEM_PULSES_REPOSITORY)) {
+			logger.info("InMemoryPulsesRepository instance");
+			pulsesRepository = new InMemoryPulsesRepository(maxNumberRQsToReadFromDB);
+		}
 		initThreadPoolManager();
 		initRestInvoker();
 	}
@@ -96,8 +123,8 @@ public class BPulseSender {
 		int pMaxPoolSize;
 		long pKeepAliveTimeMilliseconds;
 		//obtain thread initialization properties
-		String initialPoolSizeSendPulses = PropertiesManager.getProperty(BPULSE_PROPERTY_NUMBER_THREADS_SEND_PULSES);
-		String initialPoolSizeRestInvoker = PropertiesManager.getProperty(BPULSE_PROPERTY_NUMBER_THREADS_REST_INVOKER);
+		String initialPoolSizeSendPulses = "" + COMMON_NUMBER_5;//PropertiesManager.getProperty(BPULSE_PROPERTY_NUMBER_THREADS_SEND_PULSES);
+		String initialPoolSizeRestInvoker = "" + COMMON_NUMBER_60;//PropertiesManager.getProperty(BPULSE_PROPERTY_NUMBER_THREADS_REST_INVOKER);
 		
 		
 		if (initialPoolSizeSendPulses != null) {
@@ -140,7 +167,15 @@ public class BPulseSender {
 	public synchronized String sendPulse(PulsesRQ pulse) {
 		Random random = new Random();
 		long additionalPulseId = random.nextLong();
-		if (maxDBSizeBytes > this.pulsesRepository.getDBSize()) {
+		long maxRepositorySize = 0;
+		
+		if(propDBMode.equals(BPULSE_DB_PULSES_REPOSITORY)) {
+			maxRepositorySize = maxDBSizeBytes;
+		} else if(propDBMode.equals(BPULSE_MEM_PULSES_REPOSITORY)) {
+			maxRepositorySize = maxMemNumPulses;
+		}
+		
+		if (maxRepositorySize > this.pulsesRepository.getDBSize()) {
 			PulsesSenderThread thread = new PulsesSenderThread("THREAD-"+System.currentTimeMillis() + additionalPulseId, pulse, this.pulsesRepository);
 			persistPulsesThreadPool.getThreadPoolExecutor().execute(thread);
 			return BPULSE_SUCCESSFUL_RESPONSE;
@@ -157,10 +192,10 @@ public class BPulseSender {
 	 * @param keysToDelete The Pulse Key List of the pulses to delete from the PULSESDB.
 	 */
 	public synchronized void executeBPulseRestService(PulsesRQ summarizedPulsesRQToSend,
-			List<Long> keysToDelete) {
+			List<Long> keysToDelete, int tableIndex, String dbMode) {
 		Random random = new Random();
 		long additionalPulseId = random.nextLong();
-		sendPulsesByRestThreadPool.getThreadPoolExecutor().execute(new BPulseRestSenderThread("THREAD-"+System.currentTimeMillis() + additionalPulseId, summarizedPulsesRQToSend, this.pulsesRepository, keysToDelete, restInvoker, bpulseRestUrl));
+		sendPulsesByRestThreadPool.getThreadPoolExecutor().execute(new BPulseRestSenderThread("THREAD-"+System.currentTimeMillis() + additionalPulseId, summarizedPulsesRQToSend, this.pulsesRepository, keysToDelete, restInvoker, bpulseRestUrl, tableIndex, dbMode));
 	}
 	
 	public IPulsesRepository getPulsesRepository() {

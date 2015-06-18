@@ -28,7 +28,7 @@ import org.slf4j.*;
 public class ThreadPoolManager {
 	
 	/** Log de la clase. */
-	private static Logger logger = LoggerFactory.getLogger(ThreadPoolManager.class);
+	private static Logger logger = LoggerFactory.getLogger("bpulseLogger");
 	private ExecutorService threadPool;
 	
 	public ThreadPoolManager(int pPoolSize) {

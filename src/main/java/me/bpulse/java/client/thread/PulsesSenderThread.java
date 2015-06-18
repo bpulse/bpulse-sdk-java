@@ -3,6 +3,8 @@
  */
 package me.bpulse.java.client.thread;
 
+import java.util.Calendar;
+
 import javax.sql.rowset.spi.SyncResolver;
 
 import me.bpulse.domain.proto.collector.CollectorMessageRQ.PulsesRQ;
@@ -39,7 +41,10 @@ public class PulsesSenderThread implements Runnable{
 	 * 
 	 */
 	public synchronized void  sendPulseToRepository() throws Exception {
-		this.dbPulsesRepository.savePulse(this.pulseRQToPersist);
+		//obtain the current minute.
+		Calendar currentTime = Calendar.getInstance();
+		int currentMinute = currentTime.get(Calendar.MINUTE);
+		this.dbPulsesRepository.savePulse(this.pulseRQToPersist, currentMinute);
 	}
 
 }

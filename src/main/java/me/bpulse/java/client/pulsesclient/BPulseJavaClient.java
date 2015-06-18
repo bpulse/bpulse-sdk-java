@@ -14,12 +14,15 @@ import me.bpulse.java.client.properties.PropertiesManager;
 import me.bpulse.java.client.pulsesender.BPulseSender;
 import me.bpulse.java.client.timer.BPulseRestSenderTimer;
 import static me.bpulse.java.client.common.BPulseConstants.BPULSE_PROPERTY_MAX_NUMBER_PULSES_TO_PROCESS_TIMER;
+import static me.bpulse.java.client.common.BPulseConstants.BPULSE_PROPERTY_PULSES_REPOSITORY_MODE;
 import static me.bpulse.java.client.common.BPulseConstants.BPULSE_PROPERTY_USER_TIMER_DELAY;
 import static me.bpulse.java.client.common.BPulseConstants.COMMON_NUMBER_0;
 import static me.bpulse.java.client.common.BPulseConstants.COMMON_NUMBER_1000;
 import static me.bpulse.java.client.common.BPulseConstants.COMMON_NUMBER_180000;
 import static me.bpulse.java.client.common.BPulseConstants.COMMON_NUMBER_60;
 import static me.bpulse.java.client.common.BPulseConstants.DEFAULT_TIMER_MIN_DELAY;
+import static me.bpulse.java.client.common.BPulseConstants.BPULSE_MEM_PULSES_REPOSITORY;
+
 import org.slf4j.*;
 
 /**
@@ -32,7 +35,7 @@ public class BPulseJavaClient {
 	private static boolean isStarted = false;
 	private static BPulseJavaClient instance;
 	private BPulseSender bpulseSender;
-	final static Logger logger = LoggerFactory.getLogger(BPulseJavaClient.class);
+	final static Logger logger = LoggerFactory.getLogger("bpulseLogger");
 	
 	protected BPulseJavaClient() throws Exception {
 		logger.info("GET INSTANCE BpulseJavaClient...");
@@ -62,7 +65,11 @@ public class BPulseJavaClient {
 		try {
 			logger.info("INIT BPULSE TIMER...");
 			if (!isStarted) {
-				TimerTask timerTask = new BPulseRestSenderTimer(bpulseSender);
+				String propDBMode = PropertiesManager.getProperty(BPULSE_PROPERTY_PULSES_REPOSITORY_MODE);
+				if(propDBMode == null) {
+					propDBMode = BPULSE_MEM_PULSES_REPOSITORY;
+				}
+				TimerTask timerTask = new BPulseRestSenderTimer(bpulseSender, propDBMode);
 		        Timer timer = new Timer();
 		        String periodInMinutesNextExecutionTimer = PropertiesManager.getProperty(BPULSE_PROPERTY_USER_TIMER_DELAY);
 		        long periodInMillis = COMMON_NUMBER_0;

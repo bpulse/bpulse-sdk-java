@@ -27,6 +27,8 @@ import me.bpulse.java.client.rest.ExtraResponse;
 import me.bpulse.java.client.rest.RestInvoker;
 import me.bpulse.java.client.rest.RestInvoker.TestContentType;
 import static me.bpulse.java.client.common.BPulseConstants.BPULSE_REST_HTTP_CREATED;
+import static me.bpulse.java.client.common.BPulseConstants.BPULSE_MEM_PULSES_REPOSITORY;
+import static me.bpulse.java.client.common.BPulseConstants.BPULSE_DB_PULSES_REPOSITORY;
 
 /**
  * @author BPulse team
@@ -41,15 +43,19 @@ public class BPulseRestSenderThread implements Runnable{
 	private RestInvoker restInvoker;
 	private String bpulseRestURL;
 	private String id;
-	final static Logger logger = LoggerFactory.getLogger(BPulseRestSenderThread.class);
+	private int tableIndex;
+	private String dbMode;
+	final static Logger logger = LoggerFactory.getLogger("bpulseLogger");
 	
-	public BPulseRestSenderThread(String pThreadId, PulsesRQ pPulseToSendByRest, IPulsesRepository pDbPulsesRepository,List<Long> pKeysToDelete, RestInvoker pRestInvoker, String pUrl) {
+	public BPulseRestSenderThread(String pThreadId, PulsesRQ pPulseToSendByRest, IPulsesRepository pDbPulsesRepository,List<Long> pKeysToDelete, RestInvoker pRestInvoker, String pUrl, int tableIndex, String dbMode) {
 		this.pulseToSendByRest = pPulseToSendByRest;
 		this.dbPulsesRepository = pDbPulsesRepository;
 		this.keysToDelete = pKeysToDelete;
 		this.id = pThreadId;
 		this.restInvoker = pRestInvoker;
 		this.bpulseRestURL = pUrl;
+		this.tableIndex = tableIndex;
+		this.dbMode = dbMode;
 	}
 	
 	@Override
@@ -78,9 +84,15 @@ public class BPulseRestSenderThread implements Runnable{
 	 * 
 	 */
 	private synchronized void releaseCurrentBPulseInProgressKeys() throws Exception {
-		for(Long keyToDelete : this.keysToDelete) {
-			this.dbPulsesRepository.releaseBpulseKeyInProgressByKey(keyToDelete);
+		
+		if(this.dbMode.equals(BPULSE_MEM_PULSES_REPOSITORY)) {
+			for(Long keyToDelete : this.keysToDelete) {
+				this.dbPulsesRepository.releaseBpulseKeyInProgressByKey(keyToDelete);
+			}
+		} else if(this.dbMode.equals(BPULSE_DB_PULSES_REPOSITORY)) {
+			this.dbPulsesRepository.releaseBpulseTableInProgress(this.tableIndex);
 		}
+		
 	}
 
 	/**
@@ -106,9 +118,16 @@ public class BPulseRestSenderThread implements Runnable{
 	 * 
 	 */
 	private synchronized void deletePulseKeysProcessedByRest() throws Exception {
-		for(Long keyToDelete : this.keysToDelete) {
-			this.dbPulsesRepository.deleteBpulseRQByKey(keyToDelete);
+		
+		if(this.dbMode.equals(BPULSE_MEM_PULSES_REPOSITORY)) {
+			for(Long keyToDelete : this.keysToDelete) {
+				this.dbPulsesRepository.deleteBpulseRQByKey(keyToDelete);
+			}
+		} else if(this.dbMode.equals(BPULSE_DB_PULSES_REPOSITORY)) {
+			this.dbPulsesRepository.truncateBpulseRQByTableIndex(this.tableIndex);
+			this.dbPulsesRepository.releaseBpulseTableInProgress(this.tableIndex);
 		}
+		
 	}
 	
 	class BPulseResponseHandler implements ResponseHandler <PulsesRS> {

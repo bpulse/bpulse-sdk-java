@@ -21,6 +21,7 @@ public class BPulseConstants {
 	public static final int COMMON_NUMBER_2 = 2;
 	public static final int COMMON_NUMBER_3 = 3;
 	public static final int COMMON_NUMBER_5 = 5;
+	public static final int COMMON_NUMBER_MINUS_5 = -5;
 	public static final int COMMON_NUMBER_180000 = 180000;
 	public static final int BPULSE_REST_HTTP_CREATED = 201;
 	
@@ -39,6 +40,9 @@ public class BPulseConstants {
 	public static final String BPULSE_PROPERTY_URL_REST_SERVICE = "bpulse.client.bpulseRestURL";
 	public static final String BPULSE_PROPERTY_MAX_NUMBER_PULSES_TO_PROCESS_TIMER = "bpulse.client.maxNumberPulsesReadFromTimer";
 	public static final String BPULSE_PROPERTY_MAX_PULSESDB_SIZE_BYTES = "bpulse.client.pulsesRepositoryDBMaxSizeBytes";
-	
+	public static final String BPULSE_PROPERTY_PULSES_REPOSITORY_MODE = "bpulse.client.pulsesRepositoryMode";
+	public static final String BPULSE_PROPERTY_MEM_PULSES_REPOSITORY_MAX_NUM_PULSES = "bpulse.client.pulsesRepositoryMemMaxNumberPulses";
+	public static final String BPULSE_MEM_PULSES_REPOSITORY = "MEM";
+	public static final String BPULSE_DB_PULSES_REPOSITORY = "DB";
 
 }
