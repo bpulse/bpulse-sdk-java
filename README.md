@@ -1,25 +1,15 @@
 # README #
 
-BPulse Java Client is a conector between any client subscribed to BPULSE Service and the PULSES COLLECTOR REST SERVICE.
+Bpulse SDK Java or BPulse Java Client is a conector between any java based application subscribed to BPULSE Service and the PULSES COLLECTOR REST SERVICE.
 This README explains how to integrate the conector with the target client application, configuration parameters and how to use it.
 
 ### REQUIREMENTS ###
 
 BPulse Java Client is a maven project. It requires the following dependencies for being used in any java maven project:
 
-* **bpulse-java-client**
-
-
-```
-#!xml
-<dependency>
-	<groupId>me.bpulse</groupId>
-	<artifactId>bpulse-java-client</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
-</dependency>
-
-```
-
+* **bpulse-protobuf-java**
+* **Apache Maven**
+* **JDK Version 1.7+**
 * **SLF4J Logging Framework Bindings**
 
 BPulse Java Client uses SLF4J API for register logs from pulses processing and sending via BPULSE REST SERVICE. SLF4J uses a set of binding dependencies for each
@@ -163,7 +153,21 @@ log4j.appender.bpulseLogger.MaxBackupIndex=10
 
 In case of the target system has its own logging properties file, it's necessary to add the corresponding lines mentioned above to it.
 
-### HOW TO USE ###
+### Usage ###
+
+With Maven, add this dependency to your pom.xml
+
+```
+#!xml
+<dependency>
+	<groupId>me.bpulse</groupId>
+	<artifactId>bpulse-java-client</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+</dependency>
+
+```
+
+With Manual build, complile the client then add it to your application classpath along with the mentioned dependencies above.
 
 Bpulse java client uses BPulseJavaClient class for pulses sending to BPULSE. It implements two methods: getInstance() and sendPulse(PulsesRQ) for create/load pulses repository and assign the number of threads for insert pulses into the repository and the sending of them via BPULSE COLLECTOR REST SERVICE.
 
