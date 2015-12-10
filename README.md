@@ -1,14 +1,42 @@
-# README #
 
-BPulse Java Client is a conector between any client subscribed to BPULSE Service and the PULSES COLLECTOR REST SERVICE.
+# bpulse-sdk-java
+
+Bpulse SDK Java or BPulse Java Client is a conector between any java based application subscribed to BPULSE Service and the PULSES COLLECTOR REST SERVICE.
 This README explains how to integrate the conector with the target client application, configuration parameters and how to use it.
 
 ### REQUIREMENTS ###
 
-BPulse Java Client is a maven project. It requires the following dependencies for being used in any java maven project:
+* **bpulse-protobuf-java** (https://github.com/bpulse/bpulse-protobuf-java)
+* **Apache Maven**
+* **JDK Version 1.7+**
 
-* **bpulse-java-client**
+### Build dependencies ###
+The following dependencies are required to build the sdk and are also required in the classpath of your application at runtime:
 
+* BPulse dependencies
+ * bpulse.protobuf[latest].jar (https://github.com/bpulse/bpulse-protobuf-java)
+* Google Protobuf dependencies
+ * protobuf-java-format-1.2.jar
+ * protobuf-java.2.5.0.jar
+* Apache http dependencies
+ * httpclient-4.4.1.jar
+ * httpcore-4.4.1.jar
+ * commons-logging-1.2.jar
+ * commons-codec-1.9.jar
+* H2 Database Engine dependencies
+ * h2-1.4.186.jar
+* SLF4J dependencies
+ * slf4j-api-1.7.5.jar
+ * Corresponding Binding for used logging framework (See **Binding with a logging framework at deployment time** at [http://www.slf4j.org/manual.html](http://www.slf4j.org/manual.html))
+
+ This is a maven project, so all of this dependencies are already added in the given pom.xml but you must have them in mind if you build
+ your application without maven or the runtime classpath is provided by another third party.
+
+
+### Usage ###
+
+#### Maven ####
+After building the project and install it on the maven repo, add this dependency to your pom.xml
 
 ```
 #!xml
@@ -20,12 +48,138 @@ BPulse Java Client is a maven project. It requires the following dependencies fo
 
 ```
 
-* **SLF4J Logging Framework Bindings**
+Remember the dependencies mentioned above incase your current classpath doesn't have them at runtime.
 
-BPulse Java Client uses SLF4J API for register logs from pulses processing and sending via BPULSE REST SERVICE. SLF4J uses a set of binding dependencies for each
-supported logging framework (log4j, tinylog, jdk logging, logback). If the target application uses someone of these frameworks, it's neccessary add the related 
+#### Manual ####
+Build the sdk using
+```
+$ mvn clean package
+
+```
+Then take the generated bpulse-java-client-[version].jar under target/ directory and add it to your classpath along with
+the other dependencies mentioned.
+
+The starting point is the BPulseJavaClient class for pulses sending to BPULSE. It implements two methods: getInstance() and sendPulse(PulsesRQ) to publish them via BPULSE COLLECTOR REST SERVICE.
+
+```
+#!java
+
+//get the BPulseJavaClient instance. It manages the pulses repository and begins the pulses notification timer.
+BPulseJavaClient client = BPulseJavaClient.getInstance();
+```
+
+Then use a combination of me.bpulse.domain.proto.collector.CollectorMessageRQ.PulsesRQ, me.bpulse.domain.proto.collector.CollectorMessageRQ.Value and me.bpulse.domain.proto.collector.CollectorMessageRQ.Pulse in order to build the pulses you want to send according to the Pulse Definition made in BPULSE, for example:
+
+```
+#!java
+.
+.
+.
+//Request instance
+PulsesRQ request;
+//Use the builder provided to create pulses instances
+PulsesRQ.Builder pulses = PulsesRQ.newBuilder();
+//Pulse version, send 1.0 always, we will use this field later.
+pulses.setVersion("1.0");
+
+//Use the Pulse builder to create each pulse individually
+Pulse.Builder pulse = Pulse.newBuilder();
+
+//Name of the pulse definition, the same as defined using the BPULSE web app
+pulse.setTypeId("bpulse_hotelbeds_jfp");
+//Time of the pulse, usually should be the current time but you can set whatever time you need
+pulse.setTime(System.currentTimeMillis());
+//
+pulse.setInstanceId(String.valueOf(1));
+
+//Use the Value builder to assing the different pulse values to each pulse
+Value.Builder value = Value.newBuilder();
+//Name of the pulse attribute
+value.setName("attribute_name");
+//Value of the current attribute
+value.addValues("attribute_value");
+//Add the created value to the pulse instance
+pulse.addValues(value);
+
+//Same as before but for a time value TODO Joda time
+value = Value.newBuilder();
+value.setName("fechaProceso");			
+value.addValues(fmt.print(new DateTime()));
+pulse.addValues(value);
+
+//Same as before but for a numeric value
+value = Value.newBuilder();
+value.setName("numeric_attribute");
+value.addValues("123456789");
+pulse.addValues(value);
+
+//Add the pulse to the pulses collection
+pulses.addPulse(pulse);
+
+//Then build the pulses request
+request = pulses.build();
+.
+.
+.
+```
+
+Finally send the pulse created with:
+
+```
+.
+.
+.
+//invoke the operation for inserting the pulse into pulses repository.
+BPulseJavaClient client = BPulseJavaClient.getInstance();
+client.sendPulse(request);
+.
+.
+.
+
+```
+
+
+### Available Configuration Parameters ###
+
+BPulse java client has a configuration file to define the main parameters for sending and processing pulses (pulses repository path, number of threads for notifying pulses via BPULSE COLLECTOR REST SERVICE, etc.). It's definition is expected through java options property **bpulse.client.config** (e.g **-Dbpulse.client.config=C:\tmp\config.properties**).
+
+All properties are defined below:
+
+|Variable name|Description
+|          --:|--
+|bpulse.client.periodInMinutesNextExecTimer|Delay time in minutes between timer executions for pulses notification (default value = 1).
+|bpulse.client.maxNumberPulsesReadFromTimer|Max number of read pulses for each timer execution from pulsesRepositoryDB for sending to BPULSE COLLECTOR REST SERVICE (default value = 180000).
+|bpulse.client.bpulseUsername|Client's Username for sending pulses to BPULSE COLLECTOR SERVICE.
+|bpulse.client.bpulsePassword|Client's Password  for sending pulses to BPULSE COLLECTOR SERVICE.
+|bpulse.client.bpulseRestURL| BPULSE COLLECTOR REST SERVICE URL.
+|bpulse.client.pulsesRepositoryDBPath|System Path to create the Pulses Repository (e.g C:/tmp/pulses_repository). 
+|bpulse.client.pulsesRepositoryDBMaxSizeBytes|Pulses Repositories' Allowed max size in bytes (default value = 1073741824).
+|bpulse.client.pulsesRepositoryMode|Pulses Repositories' Mode:  MEM=PULSES IN MEMORY DB= PULSES IN EMBEDDED DATABASE.
+|bpulse.client.pulsesRepositoryMemMaxNumberPulses|When the pulses repositories' mode is MEM, it's necessary define the maximum number of pulses in memory(default value = 1000000). 
+
+An example of configuration file is shown:
+
+
+```
+#!properties
+
+#BPULSE JAVA CLIENT CONFIGURATION PROPERTIES
+bpulse.client.periodInMinutesNextExecTimer=1
+bpulse.client.maxNumberPulsesReadFromTimer=240000
+bpulse.client.bpulseUsername=test_collector@enterprise01.com
+bpulse.client.bpulsePassword=ABclienteuno123
+bpulse.client.bpulseRestURL=http://192.168.0.130:8080/app.collector/collector/pulses
+bpulse.client.pulsesRepositoryDBPath=C:/tmp/pulses_repository
+bpulse.client.pulsesRepositoryDBMaxSizeBytes=10737418240
+bpulse.client.pulsesRepositoryMode=MEM
+bpulse.client.pulsesRepositoryMemMaxNumberPulses=750000
+```
+
+## About Logging ##
+BPulse Java Client uses SLF4J API for register logs from pulse processing sending via BPULSE REST SERVICE. SLF4J uses a set of binding dependencies for each supported logging framework (log4j, tinylog, jdk logging, logback). If the target application uses someone of these frameworks, it's neccessary add the related 
 binding dependency like these:
 
+* **SLF4J Logging Framework Bindings**
 
 ```
 #!xml
@@ -53,8 +207,8 @@ binding dependency like these:
 ```
 
 Each binding is associated with a version of logging API (i.e in the log4j case, the version 1.7.5 of slf4j-log4j12 uses by default Apache log4j 1.2.17).
-If your target application uses another version for these logging APIs, you must excludes it from the maven dependency and manage your own logging version. 
-In the case of log4j it would be like this:
+If your target application uses another version for these logging APIs, you must exclude it from the maven dependency and manage your own logging version. 
+In the case of log4j it would be something like this:
 
 
 ```
@@ -80,25 +234,6 @@ In the case of log4j it would be like this:
 </dependency>
 
 ```
-
-If your target application is not a maven project, you must include the following jars in your libs folder:
-
-* BPulse dependencies
- * bpulse.java.client-1.0.0-SNAPSHOT.jar
- * bpulse.protobuf-0.3.3-SNAPSHOT.jar
-* Google Protobuf dependencies
- * protobuf-java-format-1.2.jar
- * protobuf-java.2.5.0.jar
-* Apache http dependencies
- * httpclient-4.4.1.jar
- * httpcore-4.4.1.jar
- * commons-logging-1.2.jar
- * commons-codec-1.9.jar
-* H2 Database Engine dependencies
- * h2-1.4.186.jar
-* SLF4J dependencies
- * slf4j-api-1.7.5.jar
- * Corresponding Binding for used logging framework (See **Binding with a logging framework at deployment time** at [http://www.slf4j.org/manual.html](http://www.slf4j.org/manual.html))
 
 ### Logging Configuration Parameters ###
 
@@ -163,64 +298,11 @@ log4j.appender.bpulseLogger.MaxBackupIndex=10
 
 In case of the target system has its own logging properties file, it's necessary to add the corresponding lines mentioned above to it.
 
-### HOW TO USE ###
+# Contact us
 
-Bpulse java client uses BPulseJavaClient class for pulses sending to BPULSE. It implements two methods: getInstance() and sendPulse(PulsesRQ) for create/load pulses repository and assign the number of threads for insert pulses into the repository and the sending of them via BPULSE COLLECTOR REST SERVICE.
+You can reach the Developer Platform team at bpulse-devel@bpulse.me
 
-```
-#!java
+# License
 
-//get the BPulseJavaClient instance. It manages the pulses repository and begins the pulses notification timer.
-BPulseJavaClient client = BPulseJavaClient.getInstance();
-.
-.
-.
-/*Definition of pulse to send*/
-PulsesRQ pulseToSend = ...;
-.
-.
-.
-//invoke the operation for inserting the pulse into pulses repository.
-client.sendPulse(this.pulseToSend);
-.
-.
-.
+The Bpulse Protobuf Java is licensed under the Apache License 2.0. Details can be found in the LICENSE file.
 
-```
-
-
-### Available Configuration Parameters ###
-
-BPulse java client has a configuration file to define the main parameters for sending and processing pulses (pulses repository path, number of threads for notifying pulses via BPULSE COLLECTOR REST SERVICE, etc.). It's definition is expected through java options property **bpulse.client.config** (e.g **-Dbpulse.client.config=C:\tmp\config.properties**).
-
-All properties are defined below:
-
-|Variable name|Description
-|          --:|--
-|bpulse.client.periodInMinutesNextExecTimer|Delay time in minutes between timer executions for pulses notification (default value = 1).
-|bpulse.client.maxNumberPulsesReadFromTimer|Max number of read pulses for each timer execution from pulsesRepositoryDB for sending to BPULSE COLLECTOR REST SERVICE (default value = 180000).
-|bpulse.client.bpulseUsername|Client's Username for sending pulses to BPULSE COLLECTOR SERVICE.
-|bpulse.client.bpulsePassword|Client's Password  for sending pulses to BPULSE COLLECTOR SERVICE.
-|bpulse.client.bpulseRestURL| BPULSE COLLECTOR REST SERVICE URL.
-|bpulse.client.pulsesRepositoryDBPath|System Path to create the Pulses Repository (e.g C:/tmp/pulses_repository). 
-|bpulse.client.pulsesRepositoryDBMaxSizeBytes|Pulses Repositories' Allowed max size in bytes (default value = 1073741824).
-|bpulse.client.pulsesRepositoryMode|Pulses Repositories' Mode:  MEM=PULSES IN MEMORY DB= PULSES IN EMBEDDED DATABASE.
-|bpulse.client.pulsesRepositoryMemMaxNumberPulses|When the pulses repositories' mode is MEM, it's necessary define the maximum number of pulses in memory(default value = 1000000). 
-
-An example of configuration file is shown:
-
-
-```
-#!properties
-
-#BPULSE JAVA CLIENT CONFIGURATION PROPERTIES
-bpulse.client.periodInMinutesNextExecTimer=1
-bpulse.client.maxNumberPulsesReadFromTimer=240000
-bpulse.client.bpulseUsername=test_collector@enterprise01.com
-bpulse.client.bpulsePassword=ABclienteuno123
-bpulse.client.bpulseRestURL=http://192.168.0.130:8080/app.collector/collector/pulses
-bpulse.client.pulsesRepositoryDBPath=C:/tmp/pulses_repository
-bpulse.client.pulsesRepositoryDBMaxSizeBytes=10737418240
-bpulse.client.pulsesRepositoryMode=MEM
-bpulse.client.pulsesRepositoryMemMaxNumberPulses=750000
-```
