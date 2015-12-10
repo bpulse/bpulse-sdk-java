@@ -4,42 +4,49 @@
 Bpulse SDK Java or BPulse Java Client is a conector between any java based application subscribed to BPULSE Service and the PULSES COLLECTOR REST SERVICE.
 This README explains how to integrate the conector with the target client application, configuration parameters and how to use it.
 
-### REQUIREMENTS ###
+# Requirements
 
-* **bpulse-protobuf-java** (https://github.com/bpulse/bpulse-protobuf-java)
-* **Apache Maven**
-* **JDK Version 1.7+**
+* [bpulse-protobuf-java](https://github.com/bpulse/bpulse-protobuf-java)
+* [Apache Maven 3.x.x](https://maven.apache.org/download.cgi)
+* [JDK Version 1.7+](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html)
 
-### Build dependencies ###
+# Build dependencies
 The following dependencies are required to build the sdk and are also required in the classpath of your application at runtime:
 
-* BPulse dependencies
- * bpulse.protobuf[latest].jar (https://github.com/bpulse/bpulse-protobuf-java)
-* Google Protobuf dependencies
+* **BPulse dependencies**
+ * bpulse.protobuf\[latest].jar
+* **Google Protobuf dependencies**
  * protobuf-java-format-1.2.jar
  * protobuf-java.2.5.0.jar
-* Apache http dependencies
+* **Apache http dependencies**
  * httpclient-4.4.1.jar
  * httpcore-4.4.1.jar
  * commons-logging-1.2.jar
  * commons-codec-1.9.jar
-* H2 Database Engine dependencies
+* **H2 Database Engine dependencies**
  * h2-1.4.186.jar
-* SLF4J dependencies
+* **SLF4J dependencies**
  * slf4j-api-1.7.5.jar
  * Corresponding Binding for used logging framework (See **Binding with a logging framework at deployment time** at [http://www.slf4j.org/manual.html](http://www.slf4j.org/manual.html))
 
- This is a maven project, so all of this dependencies are already added in the given pom.xml but you must have them in mind if you build
- your application without maven or the runtime classpath is provided by another third party.
+This is a maven project, so all of this dependencies are already added in the given pom.xml but you must have them in mind if you build your application without maven or the runtime classpath is provided by another third party.
 
+# Build
+Just clone the repository and make sure all the dependencies are satisfied, then in a terminal go to the project folder and execute:
 
-### Usage ###
+```bash
+$ mvn clean install
+```
+**Notes:**
+* If any errors occurs during build related to bpulse-protobuf dependency, please make sure that the version in this pom.xml matches with the version you build of [bpulse-protobuf-java](https://github.com/bpulse/bpulse-protobuf-java).
+ 
 
-#### Maven ####
+# Importing the project
+
+## Importing to a Maven project
 After building the project and install it on the maven repo, add this dependency to your pom.xml
 
-```
-#!xml
+```xml
 <dependency>
 	<groupId>me.bpulse</groupId>
 	<artifactId>bpulse-java-client</artifactId>
@@ -48,33 +55,36 @@ After building the project and install it on the maven repo, add this dependency
 
 ```
 
-Remember the dependencies mentioned above incase your current classpath doesn't have them at runtime.
+Remember the dependencies mentioned above incase your current classpath doesn't have them at runtime, also keep in mind the version of this project you are building.
 
-#### Manual ####
+## Importing to a classic Java project
 Build the sdk using
-```
+```bash
 $ mvn clean package
-
 ```
 Then take the generated bpulse-java-client-[version].jar under target/ directory and add it to your classpath along with
 the other dependencies mentioned.
 
-The starting point is the BPulseJavaClient class for pulses sending to BPULSE. It implements two methods: getInstance() and sendPulse(PulsesRQ) to publish them via BPULSE COLLECTOR REST SERVICE.
-
+## Starting your application
+The SDK needs some configuration properties that indicate the client how should work and where to connect so you must provide a properties file when you start your application or the application server where your application run, so to do that, simply provide the **bpulse.client.config** as *VM_ARG*, for example:
+```bash
+$ java -jar myapp.jar -Dbpulse.client.config=path/to/config.properties
 ```
-#!java
+If your application runs on an application server, simply append this vm arg to the existing one depending on your server.
 
+
+# Usage
+
+The starting point is the BPulseJavaClient class. It implements two methods: getInstance() and sendPulse(PulsesRQ) to publish them via BPULSE COLLECTOR REST SERVICE.
+
+```java
 //get the BPulseJavaClient instance. It manages the pulses repository and begins the pulses notification timer.
 BPulseJavaClient client = BPulseJavaClient.getInstance();
 ```
 
-Then use a combination of me.bpulse.domain.proto.collector.CollectorMessageRQ.PulsesRQ, me.bpulse.domain.proto.collector.CollectorMessageRQ.Value and me.bpulse.domain.proto.collector.CollectorMessageRQ.Pulse in order to build the pulses you want to send according to the Pulse Definition made in BPULSE, for example:
+Then use a combination of *me.bpulse.domain.proto.collector.CollectorMessageRQ.PulsesRQ*, *me.bpulse.domain.proto.collector.CollectorMessageRQ.Value* and *me.bpulse.domain.proto.collector.CollectorMessageRQ.Pulse* in order to build the pulses you want to send according to the Pulse Definition made in BPULSE, for example:
 
-```
-#!java
-.
-.
-.
+```java
 //Request instance
 PulsesRQ request;
 //Use the builder provided to create pulses instances
@@ -118,23 +128,14 @@ pulses.addPulse(pulse);
 
 //Then build the pulses request
 request = pulses.build();
-.
-.
-.
+
 ```
 
 Finally send the pulse created with:
 
-```
-.
-.
-.
+```java
 //invoke the operation for inserting the pulse into pulses repository.
-BPulseJavaClient client = BPulseJavaClient.getInstance();
 client.sendPulse(request);
-.
-.
-.
 
 ```
 
