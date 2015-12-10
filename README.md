@@ -72,6 +72,19 @@ $ java -jar myapp.jar -Dbpulse.client.config=path/to/config.properties
 ```
 If your application runs on an application server, simply append this vm arg to the existing one depending on your server.
 
+This is an example of a basic configuration file content:
+```properties
+#BPULSE JAVA CLIENT CONFIGURATION PROPERTIES
+bpulse.client.periodInMinutesNextExecTimer=1
+bpulse.client.maxNumberPulsesReadFromTimer=240000
+bpulse.client.bpulseUsername=collector@hotelbeds.com
+bpulse.client.bpulsePassword=collector123
+bpulse.client.bpulseRestURL=http://[bpulse.host]/app.collector/collector/pulses
+bpulse.client.pulsesRepositoryDBPath=path/to/any/temp/folder
+bpulse.client.pulsesRepositoryDBMaxSizeBytes=10737418240
+bpulse.client.pulsesRepositoryMode=MEM
+bpulse.client.pulsesRepositoryMemMaxNumberPulses=750000
+```
 
 # Usage
 
@@ -139,51 +152,37 @@ client.sendPulse(request);
 
 ```
 
+And that's it!, now you are sending pulses to BPULSE and can see them using the web dashboard.
 
-### Available Configuration Parameters ###
+## Available Configuration Parameters
 
 BPulse java client has a configuration file to define the main parameters for sending and processing pulses (pulses repository path, number of threads for notifying pulses via BPULSE COLLECTOR REST SERVICE, etc.). It's definition is expected through java options property **bpulse.client.config** (e.g **-Dbpulse.client.config=C:\tmp\config.properties**).
 
 All properties are defined below:
 
-|Variable name|Description
-|          --:|--
-|bpulse.client.periodInMinutesNextExecTimer|Delay time in minutes between timer executions for pulses notification (default value = 1).
-|bpulse.client.maxNumberPulsesReadFromTimer|Max number of read pulses for each timer execution from pulsesRepositoryDB for sending to BPULSE COLLECTOR REST SERVICE (default value = 180000).
-|bpulse.client.bpulseUsername|Client's Username for sending pulses to BPULSE COLLECTOR SERVICE.
-|bpulse.client.bpulsePassword|Client's Password  for sending pulses to BPULSE COLLECTOR SERVICE.
-|bpulse.client.bpulseRestURL| BPULSE COLLECTOR REST SERVICE URL.
-|bpulse.client.pulsesRepositoryDBPath|System Path to create the Pulses Repository (e.g C:/tmp/pulses_repository). 
-|bpulse.client.pulsesRepositoryDBMaxSizeBytes|Pulses Repositories' Allowed max size in bytes (default value = 1073741824).
-|bpulse.client.pulsesRepositoryMode|Pulses Repositories' Mode:  MEM=PULSES IN MEMORY DB= PULSES IN EMBEDDED DATABASE.
-|bpulse.client.pulsesRepositoryMemMaxNumberPulses|When the pulses repositories' mode is MEM, it's necessary define the maximum number of pulses in memory(default value = 1000000). 
+| Variable name        | Description           |
+|:------------- |:------------- |
+|bpulse.client.periodInMinutesNextExecTimer|Delay time in minutes between timer executions for pulses notification (default value = 1). |
+|bpulse.client.periodInMinutesNextExecTimer|Delay time in minutes between timer executions for pulses notification (default value = 1). |
+|bpulse.client.maxNumberPulsesReadFromTimer|Max number of read pulses for each timer execution from pulsesRepositoryDB for sending to BPULSE COLLECTOR REST SERVICE (default value = 180000). |
+|bpulse.client.bpulseUsername|Client's Username for sending pulses to BPULSE COLLECTOR SERVICE. |
+|bpulse.client.bpulsePassword|Client's Password  for sending pulses to BPULSE COLLECTOR SERVICE. |
+|bpulse.client.bpulseRestURL| BPULSE COLLECTOR REST SERVICE URL. |
+|bpulse.client.pulsesRepositoryDBPath|System Path to create the Pulses Repository (e.g C:/tmp/pulses_repository). |
+|bpulse.client.pulsesRepositoryDBMaxSizeBytes|Pulses Repositories' Allowed max size in bytes (default value = 1073741824). |
+|bpulse.client.pulsesRepositoryMode|Pulses Repositories' Mode:  MEM=PULSES IN MEMORY DB= PULSES IN EMBEDDED DATABASE. |
+|bpulse.client.pulsesRepositoryMemMaxNumberPulses|When the pulses repositories' mode is MEM, it's necessary define the maximum number of pulses in memory(default value = 1000000). |
 
 An example of configuration file is shown:
 
 
-```
-#!properties
-
-#BPULSE JAVA CLIENT CONFIGURATION PROPERTIES
-bpulse.client.periodInMinutesNextExecTimer=1
-bpulse.client.maxNumberPulsesReadFromTimer=240000
-bpulse.client.bpulseUsername=test_collector@enterprise01.com
-bpulse.client.bpulsePassword=ABclienteuno123
-bpulse.client.bpulseRestURL=http://192.168.0.130:8080/app.collector/collector/pulses
-bpulse.client.pulsesRepositoryDBPath=C:/tmp/pulses_repository
-bpulse.client.pulsesRepositoryDBMaxSizeBytes=10737418240
-bpulse.client.pulsesRepositoryMode=MEM
-bpulse.client.pulsesRepositoryMemMaxNumberPulses=750000
-```
-
-## About Logging ##
+## About Logging
 BPulse Java Client uses SLF4J API for register logs from pulse processing sending via BPULSE REST SERVICE. SLF4J uses a set of binding dependencies for each supported logging framework (log4j, tinylog, jdk logging, logback). If the target application uses someone of these frameworks, it's neccessary add the related 
 binding dependency like these:
 
 * **SLF4J Logging Framework Bindings**
 
-```
-#!xml
+```xml
 <!-- Dependency for Tinylog binding -->
 <dependency>
 	<groupId>org.tinylog</groupId>
@@ -212,8 +211,7 @@ If your target application uses another version for these logging APIs, you must
 In the case of log4j it would be something like this:
 
 
-```
-#!xml
+```xml
 <!-- Excludes the log4j default version managed by SLF4J binding -->
 <dependency> 
 	<groupId>org.slf4j</groupId> 
@@ -236,7 +234,7 @@ In the case of log4j it would be something like this:
 
 ```
 
-### Logging Configuration Parameters ###
+## Logging Configuration Parameters
 
 After selecting the logging api, it's necessary to add a java option according to the used logging framework:
 
@@ -244,7 +242,7 @@ After selecting the logging api, it's necessary to add a java option according t
 
 **Tinylog's properties file example:**
 
-```
+```properties
 tinylog.writer = rollingfile
 tinylog.writer.filename = C:/tmp/log/bpulse-java-client-tinylog.log
 tinylog.writer.backups = 10
@@ -256,7 +254,7 @@ tinylog.writer.policies = startup, size: 10KB
 
 **log4j's properties file example:**
 
-```
+```properties
 ##LOG4J CONFIGURATION##
 log4j.logger.bpulseLogger=INFO, bpulseLogger
 # File appender
@@ -274,7 +272,7 @@ log4j.appender.bpulseLogger.MaxBackupIndex=10
 
 **logback's properties file example:**
 
-```
+```xml
 <configuration>
 <appender name="FILE" class="ch.qos.logback.core.FileAppender">
     <file>C:/tmp/log/bpulse-java-client-logback.log</file>
@@ -301,7 +299,7 @@ In case of the target system has its own logging properties file, it's necessary
 
 # Contact us
 
-You can reach the Developer Platform team at bpulse-devel@bpulse.me
+You can reach the Developer Platform team at jtenganan@innova4j.com
 
 # License
 
