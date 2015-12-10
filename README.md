@@ -1,4 +1,5 @@
-# README #
+
+# bpulse-sdk-java
 
 Bpulse SDK Java or BPulse Java Client is a conector between any java based application subscribed to BPULSE Service and the PULSES COLLECTOR REST SERVICE.
 This README explains how to integrate the conector with the target client application, configuration parameters and how to use it.
@@ -304,3 +305,4 @@ You can reach the Developer Platform team at bpulse-devel@bpulse.me
 # License
 
 The Bpulse Protobuf Java is licensed under the Apache License 2.0. Details can be found in the LICENSE file.
+
