@@ -44,5 +44,7 @@ public class BPulseConstants {
 	public static final String BPULSE_PROPERTY_MEM_PULSES_REPOSITORY_MAX_NUM_PULSES = "bpulse.client.pulsesRepositoryMemMaxNumberPulses";
 	public static final String BPULSE_MEM_PULSES_REPOSITORY = "MEM";
 	public static final String BPULSE_DB_PULSES_REPOSITORY = "DB";
+	public static final String CHARSET_UTF8 = "UTF-8";
+	public static final String CHARSET_ISO88591 = "ISO-8859-1";
 
 }
