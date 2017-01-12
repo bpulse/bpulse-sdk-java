@@ -6,8 +6,7 @@ package me.bpulse.java.client.rest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import me.bpulse.domain.proto.collector.CollectorMessageRQ.PulsesRQ;
-
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -17,13 +16,14 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+
+import me.bpulse.domain.proto.collector.CollectorMessageRQ.PulsesRQ;
 
 /**
  * @author BPulse team
@@ -41,6 +41,9 @@ public class RestInvoker {
 	
 	/** Password del Collector para pruebas del Benchmark .*/
 	public static final String TEST_COLLECTOR_PASSWORD = "test_collector_password1";
+	
+	/** basic authtentication String. **/
+	private String basicAuth = "";
 
 	public enum TestContentType {
 		JSON, PROTOBUF
@@ -76,7 +79,8 @@ public class RestInvoker {
         	    .setConnectTimeout(invokeTimeout)
         	    .setConnectionRequestTimeout(invokeTimeout)
         	    .build();
-        
+    	basicAuth = new String(Base64.encodeBase64((pUser + ":" + pPassword).getBytes()));
+    	
         httpclient = HttpClients.custom()
 				.setDefaultCredentialsProvider(credsProvider)
 				.setConnectionManager(cm)
@@ -108,7 +112,7 @@ public class RestInvoker {
 		case PROTOBUF:
 			httpPost.addHeader("Content-Type", "application/x-protobuf");
 			httpPost.addHeader("Accept", "application/x-protobuf");
-			
+			httpPost.addHeader("Authorization", "Basic " + basicAuth);
 			entity = new ByteArrayEntity(pInput.toByteArray());
 
 			break;
@@ -125,7 +129,6 @@ public class RestInvoker {
 			wsTime = System.currentTimeMillis() - wsTime;
 
 			extraResponse = new ExtraResponse<T>(wsTime, processResponse);
-
 		} catch (ClientProtocolException e) {
 			throw e;
 		} catch (IOException e) {
@@ -157,7 +160,7 @@ public class RestInvoker {
 		case PROTOBUF:
 			httpPost.addHeader("Content-Type", "application/x-protobuf");
 			httpPost.addHeader("Accept", "application/x-protobuf");
-			
+			httpPost.addHeader("Authorization", "Basic " + basicAuth);
 			entity = new ByteArrayEntity(pInput);
 
 			break;
