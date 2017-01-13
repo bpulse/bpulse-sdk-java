@@ -151,7 +151,7 @@ Finally send the pulse created with:
 client.sendPulse(request);
 
 ```
-If some attribute was defined as LongData type add this code to specify them.
+If some attribute was defined as LongData type you must provide their names in a list  for each pulse. 
 ```
 //Configure LongData attributes.
 ArrayList AttributeDtoList = new ArrayList();
