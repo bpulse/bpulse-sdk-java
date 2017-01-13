@@ -109,7 +109,7 @@ pulses.setVersion("1.0");
 Pulse.Builder pulse = Pulse.newBuilder();
 
 //Name of the pulse definition, the same as defined using the BPULSE web app
-pulse.setTypeId("bpulse_hotelbeds_jfp");
+pulse.setTypeId("bpulse_client_hotelavail");
 //Time of the pulse, usually should be the current time but you can set whatever time you need
 pulse.setTime(System.currentTimeMillis());
 //
