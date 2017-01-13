@@ -151,6 +151,17 @@ Finally send the pulse created with:
 client.sendPulse(request);
 
 ```
+If some attribute was defined as LongData type add this code to specify them.
+```
+//Configure LongData attributes.
+ArrayList AttributeDtoList = new ArrayList();
+AttributeDto adto = new AttributeDto("bpulse_client_hotelavail",Arrays.asList("attrLong"));
+AttributeDtoList.add(adto);
+```
+And use the appropriate method to send it
+```
+client.sendPulseWithLong(request, AttributeDtoList);
+```
 
 And that's it!, now you are sending pulses to BPULSE and can see them using the web dashboard.
 
