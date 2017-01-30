@@ -151,14 +151,69 @@ Finally send the pulse created with:
 client.sendPulse(request);
 
 ```
-If some attribute was defined as LongData type you must provide their names in a list  for each pulse. 
+When you need to send longData values, you have to build the pulses you want to send according to the Pulse Definition made in BPULSE similar to example above
+
+```java
+//Request instance
+PulsesRQ request;
+//Use the builder provided to create pulses instances
+PulsesRQ.Builder pulses = PulsesRQ.newBuilder();
+//Pulse version, send 1.0 always, we will use this field later.
+pulses.setVersion("1.0");
+
+//Use the Pulse builder to create each pulse individually
+Pulse.Builder pulse = Pulse.newBuilder();
+
+//Name of the pulse definition, the same as defined using the BPULSE web app
+pulse.setTypeId("bpulse_client_hotelavail");
+//Time of the pulse, usually should be the current time but you can set whatever time you need
+pulse.setTime(System.currentTimeMillis());
+//
+pulse.setInstanceId(String.valueOf(1));
+
+//Use the Value builder to assing the different pulse values to each pulse
+Value.Builder value = Value.newBuilder();
+//Name of the pulse attribute
+value.setName("attribute_name");
+//Value of the current attribute
+value.addValues("attribute_value");
+//Add the created value to the pulse instance
+pulse.addValues(value);
+
+//Same as before but for a time value TODO Joda time
+value = Value.newBuilder();
+value.setName("fechaProceso");			
+value.addValues(fmt.print(new DateTime()));
+pulse.addValues(value);
+
+//Same as before but for a numeric value
+value = Value.newBuilder();
+value.setName("numeric_attribute");
+value.addValues("123456789");
+pulse.addValues(value);
+
+//Same as before but for a LongData value
+value = Value.newBuilder();
+value.setName("attrLong");
+value.addValues("123456789");
+pulse.addValues(value);
+
+//Add the pulse to the pulses collection
+pulses.addPulse(pulse);
+
+//Then build the pulses request
+request = pulses.build();
+
+```
+
+And for each attribute defined as LongData type you must provide their names in a list for each pulse. 
 ```
 //Configure LongData attributes.
 ArrayList AttributeDtoList = new ArrayList();
 AttributeDto adto = new AttributeDto("bpulse_client_hotelavail",Arrays.asList("attrLong"));
 AttributeDtoList.add(adto);
 ```
-And use the appropriate method to send it
+Use the appropriate method to send it
 ```
 client.sendPulseWithLong(request, AttributeDtoList);
 ```
