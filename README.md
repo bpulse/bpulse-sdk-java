@@ -195,7 +195,7 @@ pulse.addValues(value);
 //Same as before but for a LongData value
 value = Value.newBuilder();
 value.setName("attrLong");
-value.addValues("123456789");
+value.addValues("[ { \"_id\": \"576c0e769ae931f5\", \"index\": 0, \"product\": \"HT206\", \"isActive\": true, \"price\": \"221\" } ]");
 pulse.addValues(value);
 
 //Add the pulse to the pulses collection
@@ -365,7 +365,7 @@ In case of the target system has its own logging properties file, it's necessary
 
 # Contact us
 
-You can reach the Developer Platform team at jtenganan@innova4j.com
+You can reach the Developer Platform team at jtenganan@bpulse.io
 
 # License
 
