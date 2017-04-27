@@ -91,10 +91,10 @@ public class BPulseSender {
 		}
 		
 		if(propDBMode.equals(BPULSE_DB_PULSES_REPOSITORY)) {
-			logger.info("H2PulsesRepository instance");
+			logger.debug("H2PulsesRepository instance");
 			pulsesRepository = new H2PulsesRepository(maxNumberRQsToReadFromDB);
 		} else if(propDBMode.equals(BPULSE_MEM_PULSES_REPOSITORY)) {
-			logger.info("InMemoryPulsesRepository instance");
+			logger.debug("InMemoryPulsesRepository instance");
 			pulsesRepository = new InMemoryPulsesRepository(maxNumberRQsToReadFromDB);
 		}
 		initThreadPoolManager();

@@ -90,7 +90,7 @@ public class H2PulsesRepository implements IPulsesRepository {
 		}
 		
 		this.limitNumberPulsesToReadFromDb = maxNumberPulsesToProcessByTimer;
-		logger.info("PREPARING TO CREATE PULSES DATABASE.");
+		logger.debug("PREPARING TO CREATE PULSES DATABASE.");
 		try {
 			Connection conn = connectionPool.getConnection();
 			PreparedStatement createPreparedStatement = null;
@@ -102,12 +102,8 @@ public class H2PulsesRepository implements IPulsesRepository {
             createPreparedStatement.close();
             conn.close();
 		} catch (SQLException e) {
-			logger.info("PULSES DATABASE ALREADY EXISTS.");
+			logger.debug("PULSES DATABASE ALREADY EXISTS.");
 		}
-		
-		
-		//convertAllBpulseKeyInProgressToPending();
-		
 
 		bpulseTableInProgressMap = new HashMap<Integer,String>();
 		

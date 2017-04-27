@@ -44,11 +44,10 @@ public class BPulseJavaClient {
 	final static Logger logger = LoggerFactory.getLogger("bpulseLogger");
 	
 	protected BPulseJavaClient() throws Exception {
-		logger.info("GET INSTANCE BpulseJavaClient...");
+		logger.debug("GET INSTANCE BpulseJavaClient...");
 		bpulseSender = BPulseSender.getInstance();
-//		isStarted = true;
 		start();
-		logger.info("GET INSTANCE BpulseJavaClient SUCCESSFUL.");
+		logger.debug("GET INSTANCE BpulseJavaClient SUCCESSFUL.");
 	}
 	
 	/**
@@ -69,7 +68,7 @@ public class BPulseJavaClient {
 	private synchronized void start() {
 		
 		try {
-			logger.info("INIT BPULSE TIMER...");
+			logger.debug("INIT BPULSE TIMER...");
 			if (!isStarted) {
 				String propDBMode = PropertiesManager.getProperty(BPULSE_PROPERTY_PULSES_REPOSITORY_MODE);
 				if(propDBMode == null) {

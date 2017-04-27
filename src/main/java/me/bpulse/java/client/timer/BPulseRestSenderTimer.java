@@ -75,7 +75,7 @@ public class BPulseRestSenderTimer extends TimerTask{
 	        long init = COMMON_NUMBER_0;
 	        long initGets = COMMON_NUMBER_0;
 	        long summarizeGets = COMMON_NUMBER_0;
-	        logger.info("BEGIN TIMER PULSES PROCESSING..." + " RECORDS READ FROM DB: " + pulsesRepository.countBpulsesRQ() + " IN PROGRESS: " +  pulsesRepository.countMarkBpulseKeyInProgress());
+	        logger.debug("BEGIN TIMER PULSES PROCESSING..." + " RECORDS READ FROM DB: " + pulsesRepository.countBpulsesRQ() + " IN PROGRESS: " +  pulsesRepository.countMarkBpulseKeyInProgress());
 	        for(Object keyToProcess : keys) {
 	        //for(Entry next : iterator.iterable()) {
 	        	Long keyPulse = (Long) keyToProcess;
@@ -146,7 +146,7 @@ public class BPulseRestSenderTimer extends TimerTask{
 	        	summarizedPulsesRQToSend = pulses.build();
 	    		invokeBPulseRestService(bpulseSender, summarizedPulsesRQToSend, keyPulseListToDelete, 0);
 	        }
-	        logger.info("END TIMER PULSES PROCESSING...PROCESSED PULSES: " + totalOfProcessedPulses);
+	        logger.debug("END TIMER PULSES PROCESSING...PROCESSED PULSES: " + totalOfProcessedPulses);
 		} catch (Exception e) {
 			logger.error("ERROR TIMER PROCESSING", e);
 		}
@@ -162,7 +162,7 @@ public class BPulseRestSenderTimer extends TimerTask{
 		try {
 			
 			IPulsesRepository pulsesRepository = bpulseSender.getPulsesRepository();
-			logger.info("BEGIN TIMER PULSES PROCESSING TABLES IN PROGRESS: " +  pulsesRepository.countMarkBpulseTableInProgress());
+			logger.debug("BEGIN TIMER PULSES PROCESSING TABLES IN PROGRESS: " +  pulsesRepository.countMarkBpulseTableInProgress());
 			//obtain the current minute.
 			Calendar currentTime = Calendar.getInstance();
 			int currentMinute = currentTime.get(Calendar.MINUTE);
@@ -172,11 +172,11 @@ public class BPulseRestSenderTimer extends TimerTask{
 			for(Integer tableIndex : tableIndexList) {
 				
 				if(!pulsesRepository.isAvailableBpulseTable(tableIndex)) {
-					logger.info("TABLE_INDEX" + tableIndex + " IS IN PROGRESS YET");
+					logger.debug("TABLE_INDEX" + tableIndex + " IS IN PROGRESS YET");
 					continue;
 				}
 				
-				logger.info("BEGIN PULSES PROCESSING FOR TABLE_INDEX " + tableIndex + " RECORDS READ FROM DB: " + pulsesRepository.countBpulsesRQ(tableIndex));
+				logger.debug("BEGIN PULSES PROCESSING FOR TABLE_INDEX " + tableIndex + " RECORDS READ FROM DB: " + pulsesRepository.countBpulsesRQ(tableIndex));
 				
 				//obtain the current key list
 		        Object[] keys = pulsesRepository.getSortedbpulseRQMapKeys(tableIndex);
@@ -254,11 +254,11 @@ public class BPulseRestSenderTimer extends TimerTask{
 		    		invokeBPulseRestService(bpulseSender, summarizedPulsesRQToSend, keyPulseListToDelete, tableIndex);
 		        }
 		        
-		        logger.info("END PULSES PROCESSING FOR TABLE_INDEX " + tableIndex + "...PROCESSED PULSES: " + totalOfProcessedPulses);
+		        logger.debug("END PULSES PROCESSING FOR TABLE_INDEX " + tableIndex + "...PROCESSED PULSES: " + totalOfProcessedPulses);
 	        
 			}
 	        
-	        logger.info("END TIMER PULSES PROCESSING...");
+	        logger.debug("END TIMER PULSES PROCESSING...");
 		} catch (Exception e) {
 			logger.error("ERROR TIMER PROCESSING", e);
 		}
@@ -275,7 +275,7 @@ public class BPulseRestSenderTimer extends TimerTask{
 		
 		int minIndex = (COMMON_NUMBER_60 + currentMinute + minOffset) % COMMON_NUMBER_60;
 		int maxIndex = (COMMON_NUMBER_60 + currentMinute + maxOffset) % COMMON_NUMBER_60;
-		logger.info("InitialTableIndex: " + minIndex + " LastTableIndex: " + maxIndex);
+		logger.debug("InitialTableIndex: " + minIndex + " LastTableIndex: " + maxIndex);
 		resp.add(minIndex);
 		int tempIndex = minIndex;
 		while (tempIndex != maxIndex) {
